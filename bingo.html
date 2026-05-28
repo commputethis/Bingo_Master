@@ -206,7 +206,6 @@
             border-color: var(--primary-light) !important;
         }
 
-        body.dark-mode #caller #manualEntrySection,
         body.dark-mode #manualEntrySection {
             background: var(--dark-panel) !important;
             border: 1px solid var(--primary-light);
@@ -229,25 +228,25 @@
             color: var(--primary-light) !important;
         }
 
-        body.dark-mode #manage div[style*="background: #f5f5f5"],
-        body.dark-mode #manage div[style*="background:#f5f5f5"] {
+        body.dark-mode .manage-section {
             background: var(--dark-panel) !important;
             border: 1px solid var(--primary-light);
         }
 
-        body.dark-mode #manage div[style*="background: #f5f5f5"] p,
-        body.dark-mode #manage div[style*="background:#f5f5f5"] p {
+        body.dark-mode .manage-section p {
             color: #eee !important;
         }
 
-        body.dark-mode #manage div[style*="background: #f5f5f5"] h3,
-        body.dark-mode #manage div[style*="background:#f5f5f5"] h3 {
+        body.dark-mode .manage-section h3 {
             color: var(--primary-light);
         }
 
-        body.dark-mode #manage div[style*="background: #f5f5f5"] label,
-        body.dark-mode #manage div[style*="background:#f5f5f5"] label {
+        body.dark-mode .manage-section label {
             color: #ccc;
+        }
+
+        body.dark-mode .danger-zone {
+            border-color: var(--primary-light);
         }
 
         /* Dark mode toggle button */
@@ -467,12 +466,6 @@
             border-radius: 6px; 
             background: white; 
             color: var(--primary-color);
-        }
-        
-        .bingo-cell.header { 
-            background: var(--primary-color); 
-            color: white; 
-            font-size: 20px; 
         }
         
         .bingo-cell.free { 
@@ -819,9 +812,41 @@
             border: 1px solid #e0e0e0;
         }
 
+        .settings-column h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .settings-full-width {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .settings-logos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .logo-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .settings-save-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
         /* Responsive - stack on mobile */
         @media (max-width: 768px) {
-            .settings-grid {
+            .settings-grid,
+            .settings-logos-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
@@ -887,6 +912,67 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
+        /* Manage Section Styles */
+        .manage-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .manage-section p {
+            color: #666;
+        }
+
+        .manage-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .danger-zone {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ddd;
+        }
+
+        .danger-zone h3 {
+            color: var(--accent-red);
+        }
+
+        /* Utility Classes */
+        .mt-20 { margin-top: 20px; }
+        .mt-30 { margin-top: 30px; }
+        .mb-15 { margin-bottom: 15px; }
+        .text-center { text-align: center; }
+        .text-small { font-size: 12px; }
+        .text-muted { color: #666; }
+
+        /* Manual Entry Section */
+        #manualEntrySection {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        #manualError {
+            color: var(--accent-red);
+            margin-bottom: 10px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .btn-small {
+            margin-top: 5px;
+            padding: 5px 15px;
+            font-size: 12px;
+        }
+
+        .margin-top-15 {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -896,12 +982,12 @@
         <p class="subtitle"></p>
         
         <div class="tabs">
-            <div class="tab active" onclick="showPanel('generator')">Generate Cards</div>
-            <div class="tab" onclick="showPanel('caller')">Caller</div>
-            <div class="tab" onclick="showPanel('verify')">Verify Winner</div>
-            <div class="tab" onclick="showPanel('player')">Player View</div>
-            <div class="tab" onclick="showPanel('settings')">Settings</div>
-            <div class="tab" onclick="showPanel('manage')">Manage</div>
+            <div class="tab active" onclick="showPanel('generator', event)">Generate Cards</div>
+            <div class="tab" onclick="showPanel('caller', event)">Caller</div>
+            <div class="tab" onclick="showPanel('verify', event)">Verify Winner</div>
+            <div class="tab" onclick="showPanel('player', event)">Player View</div>
+            <div class="tab" onclick="showPanel('settings', event)">Settings</div>
+            <div class="tab" onclick="showPanel('manage', event)">Manage</div>
         </div>
         
         <div id="generator" class="panel active">
@@ -925,7 +1011,7 @@
                     <h3>Reprint Specific Cards</h3>
                     <p>Click cards below to select, then click Reprint Selected</p>
                     <div class="card-list" id="cardList"></div>
-                    <button class="secondary" onclick="reprintSelected()" style="margin-top: 15px;">Reprint Selected Cards</button>
+                    <button class="secondary margin-top-15" onclick="reprintSelected()">Reprint Selected Cards</button>
                     <button onclick="selectAllCards()">Select All</button>
                     <button onclick="clearCardSelection()">Clear Selection</button>
                 </div>
@@ -954,7 +1040,7 @@
                     </select>
                 </div>
 
-                <div class="pattern-selector" style="margin-top: 20px;">
+                <div class="pattern-selector mt-20">
                     <label>Calling Mode:</label>
                     <select id="callingMode" onchange="toggleCallingMode()">
                         <option value="auto">Automatic (Computer Generated)</option>
@@ -977,11 +1063,10 @@
                 </div>
                 <div class="bingo-board" id="callerBoard"></div>
                 
-                <!-- Manual entry section (hidden by default) -->
-                <div id="manualEntrySection" style="display: none; margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                <div id="manualEntrySection">
                     <h3>Manual Mode - Click a Number to Call It</h3>
-                    <p style="margin-bottom: 15px;">Click any number on the board above to mark it as called</p>
-                    <div id="manualError" style="color: #f44336; margin-bottom: 10px; font-size: 14px; min-height: 20px;"></div>
+                    <p class="mb-15">Click any number on the board above to mark it as called</p>
+                    <div id="manualError"></div>
                     <button onclick="undoLastCall()" class="secondary" style="background: #ff9800;">↩️ Undo Last Call</button>
                     <button class="danger" onclick="resetGame()">Reset Game</button>
                 </div>
@@ -1006,7 +1091,7 @@
                     </div>
                 </div>
                 
-                <p style="margin-top: 20px;">Enter Card ID (e.g., A-001)</p>
+                <p class="mt-20">Enter Card ID (e.g., A-001)</p>
                 <div class="input-group">
                     <input type="text" id="verifyCardId" class="verify-input" placeholder="A-001" maxlength="10">
                 </div>
@@ -1034,7 +1119,7 @@
                 
                 <div>
                     <div class="bingo-board player-board" id="playerBoard"></div>
-                    <div style="margin-top: 20px;">
+                    <div class="mt-20">
                         <button class="secondary" onclick="openPlayerWindow()">Open in New Window</button>
                     </div>
                 </div>
@@ -1042,13 +1127,12 @@
         </div>
         
         <div id="settings" class="panel">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #1a237e;">Settings</h2>
+            <h2 class="text-center mb-15" style="color: var(--primary-color);">Settings</h2>
             
             <div class="settings-section">
                 <div class="settings-grid">
-                    <!-- Left Column -->
                     <div class="settings-column">
-                        <h3 style="color: #1a237e; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">Event Info</h3>
+                        <h3>Event Info</h3>
                         <div class="input-group">
                             <label>Event Name:</label>
                             <input type="text" id="eventNameInput" value="Charity Bingo Night" placeholder="Enter event name">
@@ -1063,14 +1147,13 @@
                             <label>Card ID Prefix:</label>
                             <input type="text" id="cardPrefixInput" value="A-" placeholder="e.g., GAME-" maxlength="10">
                         </div>
-                        <p style="margin-top: 20px; color: #666; font-size: 14px; text-align: center;">
+                        <p class="text-muted text-small text-center mt-20">
                             Event name and sponsor will appear on cards and player view.
                         </p>
                     </div>
                     
-                    <!-- Right Column -->
                     <div class="settings-column">
-                        <h3 style="color: #1a237e; margin-bottom: 20px; border-bottom: 2px solid #1a237e; padding-bottom: 10px;">Preferences</h3>
+                        <h3>Preferences</h3>
                         
                         <div class="input-group">
                             <label>Auto-Call Interval (seconds):</label>
@@ -1096,32 +1179,30 @@
                                 <input type="checkbox" id="speakManualCalls" style="width: auto; margin-right: 10px;">
                                 Speak Numbers During Manual Calls
                             </label>
-                            <p style="font-size: 12px; color: #666; margin-top: 5px; margin-left: 25px;">
+                            <p class="text-small text-muted" style="margin-top: 5px; margin-left: 25px;">
                                 When OFF: Audio only plays during Auto Call
                             </p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Logos Section - Full Width -->
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd;">
-                    <h3 style="color: #1a237e; margin-bottom: 20px;">Event Logos</h3>
-                    <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                <div class="settings-full-width">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Event Logos</h3>
+                    <p class="text-muted text-small mb-15">
                         Upload different logos for light and dark modes. The appropriate logo will display based on the current theme.
                     </p>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                        <!-- Left Logo -->
-                        <div>
-                            <h4 style="color: #1a237e; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Left Logo</h4>
+                    <div class="settings-logos-grid">
+                        <div class="logo-section">
+                            <h4>Left Logo</h4>
                             
-                            <div class="input-group" style="margin-bottom: 20px;">
+                            <div class="input-group mb-15">
                                 <label>☀️ Light Mode:</label>
                                 <input type="file" id="leftLightLogoInput" accept="image/*" onchange="previewLogo('left', 'light')">
                                 <div id="leftLightLogoPreview" class="logo-preview-box">
                                     <span class="placeholder">No logo</span>
                                 </div>
-                                <button onclick="clearLogo('left', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                                <button onclick="clearLogo('left', 'light')" class="btn-small">Clear</button>
                             </div>
                             
                             <div class="input-group">
@@ -1130,21 +1211,20 @@
                                 <div id="leftDarkLogoPreview" class="logo-preview-box">
                                     <span class="placeholder">No logo</span>
                                 </div>
-                                <button onclick="clearLogo('left', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                                <button onclick="clearLogo('left', 'dark')" class="btn-small">Clear</button>
                             </div>
                         </div>
                         
-                        <!-- Right Logo -->
-                        <div>
-                            <h4 style="color: #1a237e; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Right Logo</h4>
+                        <div class="logo-section">
+                            <h4>Right Logo</h4>
                             
-                            <div class="input-group" style="margin-bottom: 20px;">
+                            <div class="input-group mb-15">
                                 <label>☀️ Light Mode:</label>
                                 <input type="file" id="rightLightLogoInput" accept="image/*" onchange="previewLogo('right', 'light')">
                                 <div id="rightLightLogoPreview" class="logo-preview-box">
                                     <span class="placeholder">No logo</span>
                                 </div>
-                                <button onclick="clearLogo('right', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                                <button onclick="clearLogo('right', 'light')" class="btn-small">Clear</button>
                             </div>
                             
                             <div class="input-group">
@@ -1153,40 +1233,39 @@
                                 <div id="rightDarkLogoPreview" class="logo-preview-box">
                                     <span class="placeholder">No logo</span>
                                 </div>
-                                <button onclick="clearLogo('right', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                                <button onclick="clearLogo('right', 'dark')" class="btn-small">Clear</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Save Button - Centered -->
-                <div style="text-align: center; margin-top: 40px;">
+                <div class="settings-save-container">
                     <button onclick="saveSettings()" style="padding: 15px 50px; font-size: 18px;">Save Settings</button>
                 </div>
             </div>
         </div>
         
         <div id="manage" class="panel">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #1a237e;">Game Management</h2>
+            <h2 class="text-center mb-15" style="color: var(--primary-color);">Game Management</h2>
             
-            <div style="text-align: center; margin-top: 30px;">
-                <h3>Backup & Transfer</h3>
-                <p style="color: #666; margin-bottom: 20px;">Export to backup or transfer to another computer</p>
+            <div class="text-center mt-30">
+                <h3>Backup &amp; Transfer</h3>
+                <p class="text-muted mb-15">Export to backup or transfer to another computer</p>
                 
                 <button onclick="exportData()" style="margin: 10px;">📥 Export All Data</button>
                 
-                <div style="margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-                    <p style="margin-bottom: 10px;">Import from another computer:</p>
+                <div class="manage-section">
+                    <p class="mb-15">Import from another computer:</p>
                     <input type="file" id="importFile" accept=".json" onchange="importData()" style="display: none;">
                     <button onclick="document.getElementById('importFile').click()" style="background: #ff9800;">📤 Import Data</button>
-                    <p style="font-size: 12px; color: #666; margin-top: 10px;">Warning: Importing will replace all current data</p>
+                    <p class="text-small text-muted mt-20">Warning: Importing will replace all current data</p>
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 2px solid #ddd;">
-                <h3 style="color: #f44336;">Danger Zone</h3>
+            <div class="danger-zone">
+                <h3>Danger Zone</h3>
                 <button class="danger" onclick="clearAllData()">Clear All Data</button>
-                <p style="margin-top: 20px; color: #666;">This deletes all cards and game history permanently.</p>
+                <p class="mt-20 text-muted">This deletes all cards and game history permanently.</p>
             </div>
         </div>
     </div>
@@ -1195,7 +1274,6 @@
         // Constants
         const BINGO_SIZE = 5;
         const MAX_NUMBER = 75;
-        const NUMBERS_PER_COLUMN = 15;
         const STORAGE_KEYS = {
             GAME_STATE: 'bingoGameState',
             SETTINGS: 'bingoSettings',
@@ -1293,8 +1371,8 @@
 
         // Logo functions
         function previewLogo(position, mode) {
-            const inputId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput';
-            const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+            const inputId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoInput`;
+            const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
             const input = document.getElementById(inputId);
             const preview = document.getElementById(previewId);
             
@@ -1309,8 +1387,8 @@
         }
 
         function clearLogo(position, mode) {
-            const inputId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput';
-            const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+            const inputId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoInput`;
+            const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
             logoData[position][mode] = null;
             document.getElementById(inputId).value = '';
             document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
@@ -1328,7 +1406,7 @@
                 ['left', 'right'].forEach(position => {
                     ['light', 'dark'].forEach(mode => {
                         const logo = logoData[position][mode];
-                        const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+                        const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
                         if (logo) {
                             document.getElementById(previewId).innerHTML = `<img src="${logo}" alt="${position} ${mode} logo">`;
                         }
@@ -1491,6 +1569,7 @@
             const mode = document.getElementById('callingMode').value;
             const callNextBtn = document.getElementById('callNextBtn');
             const autoBtn = document.getElementById('autoBtn');
+            const rstBtn = document.getElementById('rstBtn');
             const manualSection = document.getElementById('manualEntrySection');
             const callerBoard = document.getElementById('callerBoard');
             
@@ -1528,7 +1607,7 @@
             
             if (gameState.calledNumbers.includes(number)) {
                 errorDiv.textContent = `Number ${getBingoLetter(number)}-${number} has already been called!`;
-                const cell = document.getElementById('callerBoard-num-' + number);
+                const cell = document.getElementById(`callerBoard-num-${number}`);
                 if (cell) {
                     cell.style.animation = 'none';
                     setTimeout(() => {
@@ -1551,7 +1630,7 @@
             updateStats();
             updateBoards(number);
             
-            const cell = document.getElementById('callerBoard-num-' + number);
+            const cell = document.getElementById(`callerBoard-num-${number}`);
             if (cell) {
                 cell.style.transform = 'scale(1.2)';
                 setTimeout(() => {
@@ -1577,7 +1656,7 @@
             }
             
             ['callerBoard', 'playerBoard'].forEach(boardId => {
-                const cell = document.getElementById(boardId + '-num-' + lastNumber);
+                const cell = document.getElementById(`${boardId}-num-${lastNumber}`);
                 if (cell) {
                     cell.classList.remove('called', 'last-called');
                 }
@@ -1684,7 +1763,7 @@
         
         function updateCardCount() {
             const count = Object.keys(gameState.cards).length;
-            document.getElementById('cardCountDisplay').innerHTML = 'Cards Generated: <strong>' + count + '</strong>';
+            document.getElementById('cardCountDisplay').innerHTML = `Cards Generated: <strong>${count}</strong>`;
         }
         
         function updateCardList() {
@@ -1780,7 +1859,6 @@
             board.innerHTML = '';
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             
-            // Create 5 rows (one per letter) with 16 columns (letter + 15 numbers)
             for (let row = 0; row < BINGO_SIZE; row++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'bingo-row';
@@ -1793,7 +1871,7 @@
                 for (let num = ranges[row][0]; num <= ranges[row][1]; num++) {
                     const cell = document.createElement('div');
                     cell.className = 'bingo-board-cell';
-                    cell.id = boardId + '-num-' + num;
+                    cell.id = `${boardId}-num-${num}`;
                     cell.textContent = num;
                     
                     cell.addEventListener('click', function() {
@@ -1811,9 +1889,9 @@
         
         function updatePattern() {
             gameState.currentPattern = document.getElementById('winningPattern').value;
-            document.getElementById('patternName').textContent = 'Pattern: ' + patternNames[gameState.currentPattern];
-            document.getElementById('verifyPatternName').textContent = 'Pattern: ' + patternNames[gameState.currentPattern];
-            document.getElementById('playerPatternName').textContent = 'Pattern: ' + patternNames[gameState.currentPattern];
+            document.getElementById('patternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
+            document.getElementById('verifyPatternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
+            document.getElementById('playerPatternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
             
             renderPatternGrid('callerPatternGrid', gameState.currentPattern);
             renderPatternGrid('verifyPatternGrid', gameState.currentPattern);
@@ -1848,7 +1926,7 @@
             
             gameState.calledNumbers.forEach(num => {
                 ['callerBoard', 'playerBoard'].forEach(boardId => {
-                    const cell = document.getElementById(boardId + '-num-' + num);
+                    const cell = document.getElementById(`${boardId}-num-${num}`);
                     if (cell) {
                         cell.classList.add('called');
                         if (num === lastNumber) {
@@ -1859,9 +1937,10 @@
             });
         }
         
-        function showPanel(panelId) {
+        function showPanel(panelId, event) {
             if (panelId === 'player') {
                 openPlayerWindow();
+                event.target.classList.add('active');
                 return;
             }
             
@@ -1883,7 +1962,7 @@
             
             for (let i = 1; i <= count; i++) {
                 const cardNum = existingCards + i;
-                const cardId = gameState.cardPrefix + cardNum.toString().padStart(3, '0');
+                const cardId = `${gameState.cardPrefix}${cardNum.toString().padStart(3, '0')}`;
                 const card = createCard(cardId);
                 gameState.cards[cardId] = card;
                 container.appendChild(renderCard(card));
@@ -1892,7 +1971,7 @@
             saveGameState();
             updateCardCount();
             updateCardList();
-            alert('Generated ' + count + ' cards! Click Print All Cards to print them.');
+            alert(`Generated ${count} cards! Click Print All Cards to print them.`);
         }
         
         function createCard(cardId) {
@@ -1996,7 +2075,7 @@
         
         function updateDisplay(number) {
             const letter = getBingoLetter(number);
-            const display = letter + '-' + number;
+            const display = `${letter}-${number}`;
             document.getElementById('currentNumber').textContent = display;
             document.getElementById('playerCurrentNumber').textContent = display;
         }
@@ -2024,7 +2103,7 @@
                 const interval = gameState.autoCallSeconds * 1000;
                 gameState.autoCallInterval = setInterval(callNextNumber, interval);
                 gameState.isAutoCalling = true;
-                btn.textContent = 'Auto Call: ON (' + gameState.autoCallSeconds + 's)';
+                btn.textContent = `Auto Call: ON (${gameState.autoCallSeconds}s)`;
                 callNextNumber();
             }
         }
@@ -2069,54 +2148,33 @@
         function checkWinPattern(card, patternKey) {
             const marked = createMarkedGrid(card);
             
+            // Patterns that can be checked via matrix matching
+            const matrixPatterns = ['windmill', 'smiley', 'martini', 'bowtie', 'coverall', 'inner', 'corners'];
+            if (matrixPatterns.includes(patternKey)) {
+                return matchesPatternMatrix(marked, patterns[patternKey]);
+            }
+            
             switch(patternKey) {
                 case 'normal':
-                    return checkHorizontal(marked) || checkVertical(marked) || checkDiagonal(marked);
-                case 'corners':
-                    return marked[0][0] && marked[0][4] && marked[4][0] && marked[4][4];
+                    return checkLine(marked);
                 case 'outside':
-                    for (let i = 0; i < 5; i++) {
-                        if (!marked[0][i]) return false;
-                        if (!marked[4][i]) return false;
-                        if (!marked[i][0]) return false;
-                        if (!marked[i][4]) return false;
-                    }
-                    return true;
-                case 'coverall':
-                    return checkFullHouse(marked);
-                case 'inner':
-                    for (let row = 1; row <= 3; row++) {
-                        for (let col = 1; col <= 3; col++) {
-                            if (!marked[row][col]) return false;
-                        }
-                    }
-                    return true;
-                case 'windmill':
-                    return matchesPatternMatrix(marked, patterns.windmill);
+                    return checkOutside(marked);
                 case 'x':
                     return checkXPattern(marked);
                 case 'plus':
-                    if (!marked[2][0] || !marked[2][1] || !marked[2][3] || !marked[2][4]) return false;
-                    if (!marked[0][2] || !marked[1][2] || !marked[3][2] || !marked[4][2]) return false;
-                    return marked[2][2];
+                    return checkPlus(marked);
                 case 'checkerboard':
-                    for (let row = 0; row < 5; row++) {
-                        for (let col = 0; col < 5; col++) {
-                            if ((row + col) % 2 === 0 && row !== 2 && col !== 2) {
-                                if (!marked[row][col]) return false;
-                            }
-                        }
-                    }
-                    return marked[2][2];
-                case 'smiley':
-                    return matchesPatternMatrix(marked, patterns.smiley);
-                case 'martini':
-                    return matchesPatternMatrix(marked, patterns.martini);
-                case 'bowtie':
-                    return matchesPatternMatrix(marked, patterns.bowtie);
+                    return checkCheckerboard(marked);
                 default:
                     return checkHorizontal(marked);
             }
+        }
+        
+        /**
+         * Checks for any winning line (horizontal, vertical, or diagonal)
+         */
+        function checkLine(marked) {
+            return checkHorizontal(marked) || checkVertical(marked) || checkDiagonal(marked);
         }
         
         /**
@@ -2132,17 +2190,10 @@
         }
         
         function createMarkedGrid(card) {
-            const grid = [];
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                grid[row] = [
-                    isCalled(card.B[row]), 
-                    isCalled(card.I[row]), 
-                    isCalled(card.N[row]), 
-                    isCalled(card.G[row]), 
-                    isCalled(card.O[row])
-                ];
-            }
-            return grid;
+            const columns = [card.B, card.I, card.N, card.G, card.O];
+            return Array.from({ length: BINGO_SIZE }, (_, row) => 
+                columns.map(col => isCalled(col[row]))
+            );
         }
         
         function isCalled(num) { 
@@ -2150,10 +2201,7 @@
         }
         
         function checkHorizontal(marked) {
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                if (marked[row].every(cell => cell)) return true;
-            }
-            return false;
+            return marked.some(row => row.every(cell => cell));
         }
         
         function checkVertical(marked) {
@@ -2169,11 +2217,12 @@
             return diag1 || diag2;
         }
         
-        function checkFullHouse(marked) {
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                for (let col = 0; col < BINGO_SIZE; col++) {
-                    if (!marked[row][col]) return false;
-                }
+        function checkOutside(marked) {
+            for (let i = 0; i < 5; i++) {
+                if (!marked[0][i]) return false;
+                if (!marked[4][i]) return false;
+                if (!marked[i][0]) return false;
+                if (!marked[i][4]) return false;
             }
             return true;
         }
@@ -2181,6 +2230,23 @@
         function checkXPattern(marked) {
             return marked[0][0] && marked[1][1] && marked[2][2] && marked[3][3] && marked[4][4] && 
                    marked[0][4] && marked[1][3] && marked[3][1] && marked[4][0];
+        }
+        
+        function checkPlus(marked) {
+            if (!marked[2][0] || !marked[2][1] || !marked[2][3] || !marked[2][4]) return false;
+            if (!marked[0][2] || !marked[1][2] || !marked[3][2] || !marked[4][2]) return false;
+            return marked[2][2];
+        }
+        
+        function checkCheckerboard(marked) {
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    if ((row + col) % 2 === 0 && row !== 2 && col !== 2) {
+                        if (!marked[row][col]) return false;
+                    }
+                }
+            }
+            return marked[2][2];
         }
         
         function openPlayerWindow() {
@@ -2415,7 +2481,7 @@
                 // Clear logo previews
                 ['left', 'right'].forEach(position => {
                     ['light', 'dark'].forEach(mode => {
-                        const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+                        const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
                         document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
                     });
                 });
