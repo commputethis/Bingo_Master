@@ -398,6 +398,10 @@
         button.danger:hover { 
             background: #d32f2f; 
         }
+
+        button.orange {
+            background: var(--accent-orange);
+        }
         
         /* Bingo Card Styles - Screen Version */
         .bingo-card { 
@@ -715,17 +719,9 @@
             color: var(--accent-green-dark);
         }
 
-        .verification-result.winner h3 {
-            color: var(--accent-green-dark);
-        }
-
         .verification-result.not-winner { 
             background: #ffcdd2; 
             border: 3px solid var(--accent-red);
-            color: var(--accent-red-dark);
-        }
-
-        .verification-result.not-winner h3 {
             color: var(--accent-red-dark);
         }
 
@@ -947,6 +943,8 @@
         .text-center { text-align: center; }
         .text-small { font-size: 12px; }
         .text-muted { color: #666; }
+        .text-primary { color: var(--primary-color); }
+        .hidden { display: none; }
 
         /* Manual Entry Section */
         #manualEntrySection {
@@ -1067,7 +1065,7 @@
                     <h3>Manual Mode - Click a Number to Call It</h3>
                     <p class="mb-15">Click any number on the board above to mark it as called</p>
                     <div id="manualError"></div>
-                    <button onclick="undoLastCall()" class="secondary" style="background: #ff9800;">↩️ Undo Last Call</button>
+                    <button onclick="undoLastCall()" class="secondary orange">↩️ Undo Last Call</button>
                     <button class="danger" onclick="resetGame()">Reset Game</button>
                 </div>
                 
@@ -1127,7 +1125,7 @@
         </div>
         
         <div id="settings" class="panel">
-            <h2 class="text-center mb-15" style="color: var(--primary-color);">Settings</h2>
+            <h2 class="text-center mb-15 text-primary">Settings</h2>
             
             <div class="settings-section">
                 <div class="settings-grid">
@@ -1187,7 +1185,7 @@
                 </div>
                 
                 <div class="settings-full-width">
-                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Event Logos</h3>
+                    <h3 class="text-primary mb-15">Event Logos</h3>
                     <p class="text-muted text-small mb-15">
                         Upload different logos for light and dark modes. The appropriate logo will display based on the current theme.
                     </p>
@@ -1246,7 +1244,7 @@
         </div>
         
         <div id="manage" class="panel">
-            <h2 class="text-center mb-15" style="color: var(--primary-color);">Game Management</h2>
+            <h2 class="text-center mb-15 text-primary">Game Management</h2>
             
             <div class="text-center mt-30">
                 <h3>Backup &amp; Transfer</h3>
@@ -1256,8 +1254,8 @@
                 
                 <div class="manage-section">
                     <p class="mb-15">Import from another computer:</p>
-                    <input type="file" id="importFile" accept=".json" onchange="importData()" style="display: none;">
-                    <button onclick="document.getElementById('importFile').click()" style="background: #ff9800;">📤 Import Data</button>
+                    <input type="file" id="importFile" accept=".json" onchange="importData()" class="hidden">
+                    <button onclick="getEl('importFile').click()" class="secondary orange">📤 Import Data</button>
                     <p class="text-small text-muted mt-20">Warning: Importing will replace all current data</p>
                 </div>
             </div>
@@ -1283,6 +1281,8 @@
             CALLING_MODE: 'bingoCallingMode'
         };
         
+        const P = { EMPTY: 0, REQUIRED: 1, FREE: 2 };
+        
         // Game state
         let gameState = { 
             calledNumbers: [], 
@@ -1298,6 +1298,7 @@
         };
 
         let selectedCards = new Set();
+        let elements = {};
 
         // Pattern names map
         const patternNames = {
@@ -1317,18 +1318,18 @@
 
         // Pattern definitions (5x5 grid, 1 = required, 0 = not required, 2 = free space)
         const patterns = {
-            normal: [[0,0,0,0,0],[0,0,0,0,0],[1,1,2,1,1],[0,0,0,0,0],[0,0,0,0,0]],
-            corners: [[1,0,0,0,1],[0,0,0,0,0],[0,0,2,0,0],[0,0,0,0,0],[1,0,0,0,1]],
-            outside: [[1,1,1,1,1],[1,0,0,0,1],[1,0,2,0,1],[1,0,0,0,1],[1,1,1,1,1]],
-            coverall: [[1,1,1,1,1],[1,1,1,1,1],[1,1,2,1,1],[1,1,1,1,1],[1,1,1,1,1]],
-            inner: [[0,0,0,0,0],[0,1,1,1,0],[0,1,2,1,0],[0,1,1,1,0],[0,0,0,0,0]],
-            windmill: [[1,1,0,1,1],[1,1,0,1,1],[0,0,2,0,0],[1,1,0,1,1],[1,1,0,1,1]],
-            x: [[1,0,0,0,1],[0,1,0,1,0],[0,0,2,0,0],[0,1,0,1,0],[1,0,0,0,1]],
-            plus: [[0,0,1,0,0],[0,0,1,0,0],[1,1,2,1,1],[0,0,1,0,0],[0,0,1,0,0]],
-            checkerboard: [[1,0,1,0,1],[0,1,0,1,0],[1,0,2,0,1],[0,1,0,1,0],[1,0,1,0,1]],
-            smiley: [[0,1,0,1,0],[0,1,0,1,0],[0,0,2,0,0],[1,0,0,0,1],[0,1,1,1,0]],
-            martini: [[1,1,1,1,1],[0,1,1,1,0],[0,0,2,0,0],[0,0,1,0,0],[0,1,1,1,0]],
-            bowtie: [[0,0,0,0,0],[1,1,0,1,1],[1,1,1,1,1],[1,1,0,1,1],[0,0,0,0,0]]
+            normal: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.FREE,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]],
+            corners: [[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED]],
+            outside: [[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.FREE,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED]],
+            coverall: Array(5).fill(Array(5).fill(P.REQUIRED)),
+            inner: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.FREE,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]],
+            windmill: [[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED]],
+            x: [[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED]],
+            plus: [[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.FREE,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY]],
+            checkerboard: [[P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.FREE,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED]],
+            smiley: [[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY]],
+            martini: [[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY]],
+            bowtie: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]]
         };
 
         // Logo data structure
@@ -1337,48 +1338,36 @@
             right: { light: null, dark: null }
         };
 
+        // DOM element cache
+        function getEl(id) {
+            return elements[id] || (elements[id] = document.getElementById(id));
+        }
+
         // Dark mode functions
         function toggleDarkMode() {
-            const body = document.body;
-            const btn = document.getElementById('modeToggle');
-            
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
-                btn.textContent = '🌙 Dark Mode';
-                localStorage.setItem(STORAGE_KEYS.DARK_MODE, 'false');
-            } else {
-                body.classList.remove('light-mode');
-                body.classList.add('dark-mode');
-                btn.textContent = '☀️ Light Mode';
-                localStorage.setItem(STORAGE_KEYS.DARK_MODE, 'true');
-            }
+            const isDark = document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('light-mode', !isDark);
+            getEl('modeToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem(STORAGE_KEYS.DARK_MODE, isDark);
         }
 
         function loadDarkMode() {
             const saved = localStorage.getItem(STORAGE_KEYS.DARK_MODE);
-            const body = document.body;
-            const btn = document.getElementById('modeToggle');
-            
-            if (saved === null || saved === 'true') {
-                body.classList.add('dark-mode');
-                btn.textContent = '☀️ Light Mode';
-            } else {
-                body.classList.add('light-mode');
-                btn.textContent = '🌙 Dark Mode';
-            }
+            const isDark = saved === null || saved === 'true';
+            document.body.classList.add(isDark ? 'dark-mode' : 'light-mode');
+            getEl('modeToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
         }
 
         // Logo functions
         function previewLogo(position, mode) {
-            const inputId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoInput`;
-            const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
-            const input = document.getElementById(inputId);
-            const preview = document.getElementById(previewId);
+            const inputId = `${position}${capitalize(mode)}LogoInput`;
+            const previewId = `${position}${capitalize(mode)}LogoPreview`;
+            const input = getEl(inputId);
+            const preview = getEl(previewId);
             
-            if (input.files && input.files[0]) {
+            if (input.files?.[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = (e) => {
                     logoData[position][mode] = e.target.result;
                     preview.innerHTML = `<img src="${e.target.result}" alt="${position} ${mode} logo">`;
                 };
@@ -1387,37 +1376,47 @@
         }
 
         function clearLogo(position, mode) {
-            const inputId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoInput`;
-            const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
+            const inputId = `${position}${capitalize(mode)}LogoInput`;
+            const previewId = `${position}${capitalize(mode)}LogoPreview`;
             logoData[position][mode] = null;
-            document.getElementById(inputId).value = '';
-            document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
+            getEl(inputId).value = '';
+            getEl(previewId).innerHTML = '<span class="placeholder">No logo</span>';
         }
 
         function loadLogos() {
             const saved = localStorage.getItem(STORAGE_KEYS.LOGOS);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                logoData = {
-                    left: { light: null, dark: null, ...parsed.left },
-                    right: { light: null, dark: null, ...parsed.right }
-                };
-                
-                ['left', 'right'].forEach(position => {
-                    ['light', 'dark'].forEach(mode => {
-                        const logo = logoData[position][mode];
-                        const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
-                        if (logo) {
-                            document.getElementById(previewId).innerHTML = `<img src="${logo}" alt="${position} ${mode} logo">`;
-                        }
-                    });
+            if (!saved) return;
+            
+            const parsed = JSON.parse(saved);
+            logoData = {
+                left: { light: null, dark: null, ...parsed.left },
+                right: { light: null, dark: null, ...parsed.right }
+            };
+            
+            ['left', 'right'].forEach(pos => {
+                ['light', 'dark'].forEach(mode => {
+                    const logo = logoData[pos][mode];
+                    if (logo) {
+                        const previewId = `${pos}${capitalize(mode)}LogoPreview`;
+                        getEl(previewId).innerHTML = `<img src="${logo}" alt="${pos} ${mode} logo">`;
+                    }
                 });
-            }
+            });
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
         // Export/Import functions
         function exportData() {
-            const exportObj = {
+            const data = collectExportData();
+            downloadJson(data, `bingo-master-backup-${new Date().toISOString().split('T')[0]}.json`);
+            alert('Data exported! The file has been downloaded to your computer.');
+        }
+
+        function collectExportData() {
+            return {
                 gameState: {
                     calledNumbers: gameState.calledNumbers,
                     cards: gameState.cards,
@@ -1434,111 +1433,92 @@
                 exportDate: new Date().toISOString(),
                 version: '1.0'
             };
-            
-            const dataStr = JSON.stringify(exportObj, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `bingo-master-backup-${new Date().toISOString().split('T')[0]}.json`;
+        }
+
+        function downloadJson(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = Object.assign(document.createElement('a'), {
+                href: URL.createObjectURL(blob),
+                download: filename
+            });
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            alert('Data exported! The file has been downloaded to your computer.');
         }
 
         function importData() {
-            const fileInput = document.getElementById('importFile');
-            const file = fileInput.files[0];
-            
+            const file = getEl('importFile').files[0];
             if (!file) return;
             
             if (!confirm('This will REPLACE all current cards and settings. Are you sure?')) {
-                fileInput.value = '';
+                getEl('importFile').value = '';
                 return;
             }
             
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    if (!data.gameState || !data.settings) {
-                        throw new Error('Invalid file format');
-                    }
-                    
-                    // Restore game state
-                    gameState.calledNumbers = data.gameState.calledNumbers || [];
-                    gameState.cards = data.gameState.cards || {};
-                    gameState.currentPattern = data.gameState.currentPattern || 'normal';
-                    
-                    // Restore settings
-                    gameState.eventName = data.settings.eventName || 'Charity Bingo Night';
-                    gameState.sponsorName = data.settings.sponsorName || 'Sponsored by Local Business';
-                    gameState.cardPrefix = data.settings.cardPrefix || 'A-';
-                    gameState.autoCallSeconds = data.settings.autoCallSeconds || 5;
-                    
-                    // Restore logos if present
-                    if (data.logos) {
-                        logoData = data.logos;
-                        localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
-                    }
-                    
-                    // Restore dark mode if present
-                    if (data.darkMode !== undefined) {
-                        localStorage.setItem(STORAGE_KEYS.DARK_MODE, data.darkMode ? 'true' : 'false');
-                    }
-                    
-                    // Save everything to localStorage
-                    saveGameState();
-                    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
-                        eventName: gameState.eventName,
-                        sponsorName: gameState.sponsorName,
-                        cardPrefix: gameState.cardPrefix,
-                        autoCallSeconds: gameState.autoCallSeconds
-                    }));
-                    
-                    // Reload the page to apply changes
+                    restoreFromImport(JSON.parse(e.target.result));
                     alert('Data imported successfully! The page will now reload.');
                     location.reload();
-                    
                 } catch (err) {
                     alert('Error importing file: ' + err.message);
-                    fileInput.value = '';
+                    getEl('importFile').value = '';
                 }
             };
             reader.readAsText(file);
         }
 
+        function restoreFromImport(data) {
+            if (!data.gameState || !data.settings) {
+                throw new Error('Invalid file format');
+            }
+            
+            gameState.calledNumbers = data.gameState.calledNumbers || [];
+            gameState.cards = data.gameState.cards || {};
+            gameState.currentPattern = data.gameState.currentPattern || 'normal';
+            gameState.eventName = data.settings.eventName || 'Charity Bingo Night';
+            gameState.sponsorName = data.settings.sponsorName || 'Sponsored by Local Business';
+            gameState.cardPrefix = data.settings.cardPrefix || 'A-';
+            gameState.autoCallSeconds = data.settings.autoCallSeconds || 5;
+            
+            if (data.logos) {
+                logoData = data.logos;
+                localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
+            }
+            
+            if (data.darkMode !== undefined) {
+                localStorage.setItem(STORAGE_KEYS.DARK_MODE, data.darkMode ? 'true' : 'false');
+            }
+            
+            saveGameState();
+            localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
+                eventName: gameState.eventName,
+                sponsorName: gameState.sponsorName,
+                cardPrefix: gameState.cardPrefix,
+                autoCallSeconds: gameState.autoCallSeconds
+            }));
+        }
+
         // Audio functions
         function loadVoices() {
-            const voiceSelect = document.getElementById('voiceSelect');
-            const voices = window.speechSynthesis.getVoices();
-            
-            voiceSelect.innerHTML = '<option value="">Default Voice</option>';
-            voices.forEach((voice, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `${voice.name} (${voice.lang})`;
-                voiceSelect.appendChild(option);
-            });
+            const voices = window.speechSynthesis?.getVoices() || [];
+            getEl('voiceSelect').innerHTML = '<option value="">Default Voice</option>' +
+                voices.map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`).join('');
         }
 
         function speakNumber(number) {
-            if (!document.getElementById('audioCallEnabled').checked) return;
+            if (!getEl('audioCallEnabled').checked) return;
             
-            const autoCallOn = gameState.isAutoCalling;
-            const manualSpeakOn = document.getElementById('speakManualCalls').checked;
+            const isAutoCalling = gameState.isAutoCalling;
+            const speakManual = getEl('speakManualCalls').checked;
             
-            if (!autoCallOn && !manualSpeakOn) return;
+            if (!isAutoCalling && !speakManual) return;
             
             const letter = getBingoLetter(number);
-            const text = `${letter}... ${number}`;
-            
-            const utterance = new SpeechSynthesisUtterance(text);
+            const utterance = new SpeechSynthesisUtterance(`${letter}... ${number}`);
             const voices = window.speechSynthesis.getVoices();
-            const voiceIndex = document.getElementById('voiceSelect').value;
+            const voiceIndex = getEl('voiceSelect').value;
             
             if (voiceIndex && voices[voiceIndex]) {
                 utterance.voice = voices[voiceIndex];
@@ -1553,94 +1533,89 @@
 
         function loadAudioSettings() {
             const saved = localStorage.getItem(STORAGE_KEYS.AUDIO);
-            if (saved) {
-                const settings = JSON.parse(saved);
-                document.getElementById('audioCallEnabled').checked = settings.enabled !== false;
-                document.getElementById('voiceSelect').value = settings.voiceIndex || '';
-                document.getElementById('speakManualCalls').checked = settings.speakManualCalls || false;
-            } else {
-                document.getElementById('audioCallEnabled').checked = true;
-                document.getElementById('speakManualCalls').checked = false;
-            }
+            const defaults = { enabled: true, speakManualCalls: false };
+            const settings = saved ? { ...defaults, ...JSON.parse(saved) } : defaults;
+            
+            getEl('audioCallEnabled').checked = settings.enabled;
+            getEl('voiceSelect').value = settings.voiceIndex || '';
+            getEl('speakManualCalls').checked = settings.speakManualCalls;
         }
 
         // Calling mode functions
         function toggleCallingMode() {
-            const mode = document.getElementById('callingMode').value;
-            const callNextBtn = document.getElementById('callNextBtn');
-            const autoBtn = document.getElementById('autoBtn');
-            const rstBtn = document.getElementById('rstBtn');
-            const manualSection = document.getElementById('manualEntrySection');
-            const callerBoard = document.getElementById('callerBoard');
+            const isManual = getEl('callingMode').value === 'manual';
+            const manualSection = getEl('manualEntrySection');
+            const callerBoard = getEl('callerBoard');
             
-            if (mode === 'manual') {
-                callNextBtn.style.display = 'none';
-                autoBtn.style.display = 'none';
-                rstBtn.style.display = 'none';
-                manualSection.style.display = 'block';
-                callerBoard.classList.add('manual-mode');
-                if (gameState.isAutoCalling) {
-                    toggleAutoCall();
-                }
-            } else {
-                callNextBtn.style.display = 'inline-block';
-                autoBtn.style.display = 'inline-block';
-                rstBtn.style.display = 'inline-block';
-                manualSection.style.display = 'none';
-                callerBoard.classList.remove('manual-mode');
+            toggleButtonVisibility('callNextBtn', !isManual);
+            toggleButtonVisibility('autoBtn', !isManual);
+            toggleButtonVisibility('rstBtn', !isManual);
+            
+            manualSection.style.display = isManual ? 'block' : 'none';
+            callerBoard.classList.toggle('manual-mode', isManual);
+            
+            if (isManual && gameState.isAutoCalling) {
+                toggleAutoCall();
             }
             
-            localStorage.setItem(STORAGE_KEYS.CALLING_MODE, mode);
+            localStorage.setItem(STORAGE_KEYS.CALLING_MODE, getEl('callingMode').value);
+        }
+
+        function toggleButtonVisibility(id, show) {
+            getEl(id).style.display = show ? 'inline-block' : 'none';
         }
 
         function loadCallingMode() {
             const saved = localStorage.getItem(STORAGE_KEYS.CALLING_MODE);
             if (saved) {
-                document.getElementById('callingMode').value = saved;
+                getEl('callingMode').value = saved;
                 toggleCallingMode();
             }
         }
 
         function handleManualNumberClick(number) {
-            const errorDiv = document.getElementById('manualError');
+            const errorDiv = getEl('manualError');
             errorDiv.textContent = '';
             
             if (gameState.calledNumbers.includes(number)) {
                 errorDiv.textContent = `Number ${getBingoLetter(number)}-${number} has already been called!`;
-                const cell = document.getElementById(`callerBoard-num-${number}`);
-                if (cell) {
-                    cell.style.animation = 'none';
-                    setTimeout(() => {
-                        cell.style.animation = 'pulse 0.5s ease';
-                    }, 10);
-                }
+                pulseCell(`callerBoard-num-${number}`);
                 return;
             }
             
-            gameState.calledNumbers.push(number);
-            
-            const idx = gameState.availableNumbers.indexOf(number);
-            if (idx > -1) {
-                gameState.availableNumbers.splice(idx, 1);
-            }
-            
+            addCalledNumber(number);
             speakNumber(number);
             saveGameState();
             updateDisplay(number);
             updateStats();
             updateBoards(number);
-            
-            const cell = document.getElementById(`callerBoard-num-${number}`);
-            if (cell) {
-                cell.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    cell.style.transform = '';
-                }, 200);
-            }
+            animateCell(`callerBoard-num-${number}`);
+        }
+
+        function addCalledNumber(number) {
+            gameState.calledNumbers.push(number);
+            const idx = gameState.availableNumbers.indexOf(number);
+            if (idx > -1) gameState.availableNumbers.splice(idx, 1);
+        }
+
+        function pulseCell(cellId) {
+            const cell = getEl(cellId);
+            if (!cell) return;
+            cell.style.animation = 'none';
+            requestAnimationFrame(() => {
+                cell.style.animation = 'pulse 0.5s ease';
+            });
+        }
+
+        function animateCell(cellId) {
+            const cell = getEl(cellId);
+            if (!cell) return;
+            cell.style.transform = 'scale(1.2)';
+            setTimeout(() => cell.style.transform = '', 200);
         }
 
         function undoLastCall() {
-            const errorDiv = document.getElementById('manualError');
+            const errorDiv = getEl('manualError');
             errorDiv.textContent = '';
             
             if (gameState.calledNumbers.length === 0) {
@@ -1656,22 +1631,14 @@
             }
             
             ['callerBoard', 'playerBoard'].forEach(boardId => {
-                const cell = document.getElementById(`${boardId}-num-${lastNumber}`);
-                if (cell) {
-                    cell.classList.remove('called', 'last-called');
-                }
+                const cell = getEl(`${boardId}-num-${lastNumber}`);
+                if (cell) cell.classList.remove('called', 'last-called');
             });
             
             saveGameState();
             
             const newLast = gameState.calledNumbers[gameState.calledNumbers.length - 1];
-            if (newLast) {
-                updateDisplay(newLast);
-            } else {
-                document.getElementById('currentNumber').textContent = '--';
-                document.getElementById('playerCurrentNumber').textContent = '--';
-            }
-            
+            updateDisplay(newLast || null);
             updateStats();
             
             errorDiv.style.color = '#4caf50';
@@ -1684,13 +1651,8 @@
 
         // Initialization
         function init() { 
-            loadDarkMode();
-            loadGameState(); 
-            loadSettings();
-            loadLogos();
-            loadAudioSettings();
-            loadCallingMode();
-    
+            loadAllData();
+            
             if (window.speechSynthesis) {
                 window.speechSynthesis.onvoiceschanged = loadVoices;
                 loadVoices();
@@ -1699,8 +1661,12 @@
             createBoards();
             updatePattern();
             updateStats();
-            updateCardCount();
-            updateCardList();
+            updateCardUI();
+        }
+
+        function loadAllData() {
+            [loadDarkMode, loadGameState, loadSettings, loadLogos, loadAudioSettings, loadCallingMode]
+                .forEach(fn => fn());
         }
         
         function loadGameState() {
@@ -1711,7 +1677,7 @@
                 gameState.cards = parsed.cards || {};
                 gameState.currentPattern = parsed.currentPattern || 'normal';
             }
-            document.getElementById('winningPattern').value = gameState.currentPattern;
+            getEl('winningPattern').value = gameState.currentPattern;
             resetAvailableNumbers();
         }
         
@@ -1724,18 +1690,18 @@
                 gameState.cardPrefix = settings.cardPrefix || 'A-';
                 gameState.autoCallSeconds = settings.autoCallSeconds || 5;
             }
-            document.getElementById('eventNameInput').value = gameState.eventName;
-            document.getElementById('sponsorNameInput').value = gameState.sponsorName;
-            document.getElementById('cardPrefixInput').value = gameState.cardPrefix;
-            document.getElementById('autoCallInterval').value = gameState.autoCallSeconds;
+            getEl('eventNameInput').value = gameState.eventName;
+            getEl('sponsorNameInput').value = gameState.sponsorName;
+            getEl('cardPrefixInput').value = gameState.cardPrefix;
+            getEl('autoCallInterval').value = gameState.autoCallSeconds;
             updateDisplaySettings();
         }
         
         function saveSettings() {
-            gameState.eventName = document.getElementById('eventNameInput').value;
-            gameState.sponsorName = document.getElementById('sponsorNameInput').value;
-            gameState.cardPrefix = document.getElementById('cardPrefixInput').value || 'A-';
-            gameState.autoCallSeconds = parseInt(document.getElementById('autoCallInterval').value) || 5;
+            gameState.eventName = getEl('eventNameInput').value;
+            gameState.sponsorName = getEl('sponsorNameInput').value;
+            gameState.cardPrefix = getEl('cardPrefixInput').value || 'A-';
+            gameState.autoCallSeconds = parseInt(getEl('autoCallInterval').value) || 5;
             
             localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
                 eventName: gameState.eventName,
@@ -1745,9 +1711,9 @@
             }));
 
             localStorage.setItem(STORAGE_KEYS.AUDIO, JSON.stringify({
-                enabled: document.getElementById('audioCallEnabled').checked,
-                voiceIndex: document.getElementById('voiceSelect').value,
-                speakManualCalls: document.getElementById('speakManualCalls').checked
+                enabled: getEl('audioCallEnabled').checked,
+                voiceIndex: getEl('voiceSelect').value,
+                speakManualCalls: getEl('speakManualCalls').checked
             }));
             
             localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
@@ -1757,17 +1723,22 @@
         }
         
         function updateDisplaySettings() {
-            document.getElementById('displayEventName').textContent = gameState.eventName;
-            document.getElementById('displaySponsorName').textContent = gameState.sponsorName;
+            getEl('displayEventName').textContent = gameState.eventName;
+            getEl('displaySponsorName').textContent = gameState.sponsorName;
+        }
+        
+        function updateCardUI() {
+            updateCardCount();
+            updateCardList();
         }
         
         function updateCardCount() {
             const count = Object.keys(gameState.cards).length;
-            document.getElementById('cardCountDisplay').innerHTML = `Cards Generated: <strong>${count}</strong>`;
+            getEl('cardCountDisplay').innerHTML = `Cards Generated: <strong>${count}</strong>`;
         }
         
         function updateCardList() {
-            const list = document.getElementById('cardList');
+            const list = getEl('cardList');
             list.innerHTML = '';
             
             const sortedCards = Object.keys(gameState.cards).sort((a, b) => {
@@ -1786,13 +1757,9 @@
         }
         
         function toggleCardSelection(cardId, element) {
-            if (selectedCards.has(cardId)) {
-                selectedCards.delete(cardId);
-                element.classList.remove('selected');
-            } else {
-                selectedCards.add(cardId);
-                element.classList.add('selected');
-            }
+            const isSelected = selectedCards.has(cardId);
+            element.classList.toggle('selected', !isSelected);
+            isSelected ? selectedCards.delete(cardId) : selectedCards.add(cardId);
         }
         
         function selectAllCards() {
@@ -1811,14 +1778,12 @@
                 return;
             }
             
-            const container = document.getElementById('cardsContainer');
+            const container = getEl('cardsContainer');
             container.innerHTML = '';
             
             selectedCards.forEach(cardId => {
                 const card = gameState.cards[cardId];
-                if (card) {
-                    container.appendChild(renderCard(card));
-                }
+                if (card) container.appendChild(renderCard(card));
             });
             
             clearCardSelection();
@@ -1827,9 +1792,7 @@
                 window.print();
                 setTimeout(() => {
                     container.innerHTML = '';
-                    Object.values(gameState.cards).forEach(card => {
-                        container.appendChild(renderCard(card));
-                    });
+                    Object.values(gameState.cards).forEach(card => container.appendChild(renderCard(card)));
                 }, 1000);
             }, 500);
         }
@@ -1849,15 +1812,23 @@
             }
         }
         
+        // FIXED: Complete createBoards function with createBoard defined
         function createBoards() {
+            // Clear the element cache for board cells since we're recreating them
+            Object.keys(elements).forEach(key => {
+                if (key.includes('-num-')) delete elements[key];
+            });
+            
             createBoard('callerBoard');
             createBoard('playerBoard');
+            setupManualModeListener();
         }
         
         function createBoard(boardId) {
-            const board = document.getElementById(boardId);
+            const board = getEl(boardId);
             board.innerHTML = '';
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
+            const letters = ['B', 'I', 'N', 'G', 'O'];
             
             for (let row = 0; row < BINGO_SIZE; row++) {
                 const rowDiv = document.createElement('div');
@@ -1865,7 +1836,7 @@
                 
                 const letterCell = document.createElement('div');
                 letterCell.className = 'bingo-board-cell letter';
-                letterCell.textContent = ['B', 'I', 'N', 'G', 'O'][row];
+                letterCell.textContent = letters[row];
                 rowDiv.appendChild(letterCell);
                 
                 for (let num = ranges[row][0]; num <= ranges[row][1]; num++) {
@@ -1873,13 +1844,6 @@
                     cell.className = 'bingo-board-cell';
                     cell.id = `${boardId}-num-${num}`;
                     cell.textContent = num;
-                    
-                    cell.addEventListener('click', function() {
-                        if (document.getElementById('callingMode').value === 'manual') {
-                            handleManualNumberClick(num);
-                        }
-                    });
-                    
                     rowDiv.appendChild(cell);
                 }
                 
@@ -1887,36 +1851,47 @@
             }
         }
         
-        function updatePattern() {
-            gameState.currentPattern = document.getElementById('winningPattern').value;
-            document.getElementById('patternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
-            document.getElementById('verifyPatternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
-            document.getElementById('playerPatternName').textContent = `Pattern: ${patternNames[gameState.currentPattern]}`;
+        // FIXED: Setup manual mode listener with proper duplicate prevention
+        let manualModeListenerAttached = false;
+        
+        function setupManualModeListener() {
+            if (manualModeListenerAttached) return;
             
-            renderPatternGrid('callerPatternGrid', gameState.currentPattern);
-            renderPatternGrid('verifyPatternGrid', gameState.currentPattern);
-            renderPatternGrid('playerPatternGrid', gameState.currentPattern);
+            const callerBoard = getEl('callerBoard');
+            
+            callerBoard.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('bingo-board-cell') || e.target.classList.contains('letter')) return;
+                if (getEl('callingMode').value !== 'manual') return;
+                
+                handleManualNumberClick(parseInt(e.target.textContent));
+            });
+            
+            manualModeListenerAttached = true;
+        }
+
+        function updatePattern() {
+            gameState.currentPattern = getEl('winningPattern').value;
+            const patternName = patternNames[gameState.currentPattern];
+            
+            ['patternName', 'verifyPatternName', 'playerPatternName'].forEach(id => {
+                getEl(id).textContent = `Pattern: ${patternName}`;
+            });
+            
+            ['callerPatternGrid', 'verifyPatternGrid', 'playerPatternGrid'].forEach(id => {
+                renderPatternGrid(id, gameState.currentPattern);
+            });
             
             saveGameState();
         }
         
         function renderPatternGrid(gridId, patternKey) {
-            const grid = document.getElementById(gridId);
-            grid.innerHTML = '';
+            const grid = getEl(gridId);
             const pattern = patterns[patternKey];
             
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                for (let col = 0; col < BINGO_SIZE; col++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'pattern-cell';
-                    if (pattern[row][col] === 1) {
-                        cell.classList.add('required');
-                    } else if (pattern[row][col] === 2) {
-                        cell.classList.add('free');
-                    }
-                    grid.appendChild(cell);
-                }
-            }
+            grid.innerHTML = pattern.flat().map(cell => {
+                const className = cell === P.REQUIRED ? 'required' : cell === P.FREE ? 'free' : '';
+                return `<div class="pattern-cell ${className}"></div>`;
+            }).join('');
         }
         
         function updateBoards(lastNumber) {
@@ -1926,134 +1901,118 @@
             
             gameState.calledNumbers.forEach(num => {
                 ['callerBoard', 'playerBoard'].forEach(boardId => {
-                    const cell = document.getElementById(`${boardId}-num-${num}`);
+                    const cell = getEl(`${boardId}-num-${num}`);
                     if (cell) {
                         cell.classList.add('called');
-                        if (num === lastNumber) {
-                            cell.classList.add('last-called');
-                        }
+                        if (num === lastNumber) cell.classList.add('last-called');
                     }
                 });
             });
         }
         
         function showPanel(panelId, event) {
+            event.target.classList.add('active');
+            
             if (panelId === 'player') {
                 openPlayerWindow();
-                event.target.classList.add('active');
                 return;
             }
             
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(panelId).classList.add('active');
+            
+            getEl(panelId).classList.add('active');
             event.target.classList.add('active');
             
-            if (panelId === 'caller') {
-                updateBoards();
-            }
+            if (panelId === 'caller') updateBoards();
         }
         
         function generateCards() {
-            const count = parseInt(document.getElementById('cardCount').value);
-            const container = document.getElementById('cardsContainer');
+            const count = parseInt(getEl('cardCount').value);
+            const container = getEl('cardsContainer');
             container.innerHTML = '';
             const existingCards = Object.keys(gameState.cards).length;
             
             for (let i = 1; i <= count; i++) {
                 const cardNum = existingCards + i;
-                const cardId = `${gameState.cardPrefix}${cardNum.toString().padStart(3, '0')}`;
+                const cardId = `${gameState.cardPrefix}${String(cardNum).padStart(3, '0')}`;
                 const card = createCard(cardId);
                 gameState.cards[cardId] = card;
                 container.appendChild(renderCard(card));
             }
             
             saveGameState();
-            updateCardCount();
-            updateCardList();
+            updateCardUI();
             alert(`Generated ${count} cards! Click Print All Cards to print them.`);
         }
         
         function createCard(cardId) {
             const card = { 
                 id: cardId, 
-                B: generateColumn(1, 15, 5), 
-                I: generateColumn(16, 30, 5), 
-                N: generateColumn(31, 45, 5), 
-                G: generateColumn(46, 60, 5), 
-                O: generateColumn(61, 75, 5) 
+                B: generateColumn(1, 15), 
+                I: generateColumn(16, 30), 
+                N: generateColumn(31, 45), 
+                G: generateColumn(46, 60), 
+                O: generateColumn(61, 75) 
             };
             card.N[2] = 'FREE';
             return card;
         }
         
-        function generateColumn(min, max, count) {
-            const nums = [];
-            const available = [];
-            for (let i = min; i <= max; i++) available.push(i);
-            for (let i = 0; i < count; i++) {
+        function generateColumn(min, max) {
+            const available = Array.from({length: max - min + 1}, (_, i) => min + i);
+            const result = [];
+            for (let i = 0; i < 5; i++) {
                 const idx = Math.floor(Math.random() * available.length);
-                nums.push(available.splice(idx, 1)[0]);
+                result.push(available.splice(idx, 1)[0]);
             }
-            return nums;
+            return result;
         }
         
         function renderCard(card) {
             const div = document.createElement('div');
             div.className = 'bingo-card';
             
-            const eventName = gameState.eventName || 'BINGO';
-            const sponsorName = gameState.sponsorName || '';
+            const isDark = document.body.classList.contains('dark-mode');
+            const leftLogo = logoData.left[isDark ? 'dark' : 'light'];
+            const rightLogo = logoData.right[isDark ? 'dark' : 'light'];
             
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const leftLogo = isDarkMode ? logoData.left.dark : logoData.left.light;
-            const rightLogo = isDarkMode ? logoData.right.dark : logoData.right.light;
+            const logosHtml = (leftLogo || rightLogo) ? `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 60px;">
+                    ${leftLogo ? `<img src="${leftLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>'}
+                    ${rightLogo ? `<img src="${rightLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>'}
+                </div>
+            ` : '';
             
-            let logosHtml = '';
-            if (leftLogo || rightLogo) {
-                logosHtml = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 60px;">`;
-                logosHtml += leftLogo ? `<img src="${leftLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>';
-                logosHtml += rightLogo ? `<img src="${rightLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>';
-                logosHtml += `</div>`;
-            }
+            const columns = ['B', 'I', 'N', 'G', 'O'];
+            const headersHtml = columns.map(col => `<div class="bingo-header">${col}</div>`).join('');
             
-            let gridHtml = '';
-            gridHtml += '<div class="bingo-header">B</div>';
-            gridHtml += '<div class="bingo-header">I</div>';
-            gridHtml += '<div class="bingo-header">N</div>';
-            gridHtml += '<div class="bingo-header">G</div>';
-            gridHtml += '<div class="bingo-header">O</div>';
-            
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                gridHtml += `<div class="bingo-cell">${card.B[row]}</div>`;
-                gridHtml += `<div class="bingo-cell">${card.I[row]}</div>`;
-                gridHtml += `<div class="bingo-cell ${card.N[row] === 'FREE' ? 'free' : ''}">${card.N[row]}</div>`;
-                gridHtml += `<div class="bingo-cell">${card.G[row]}</div>`;
-                gridHtml += `<div class="bingo-cell">${card.O[row]}</div>`;
-            }
+            const cellsHtml = Array.from({length: 5}, (_, row) => 
+                columns.map(col => {
+                    const val = card[col][row];
+                    const className = val === 'FREE' ? 'free' : '';
+                    return `<div class="bingo-cell ${className}">${val}</div>`;
+                }).join('')
+            ).join('');
             
             div.innerHTML = `
                 <div class="card-header">
                     <div class="card-id">Card ID: ${card.id}</div>
                     ${logosHtml}
-                    <div class="card-event-name">${eventName}</div>
-                    <div class="card-sponsor-name">${sponsorName}</div>
+                    <div class="card-event-name">${gameState.eventName || 'BINGO'}</div>
+                    <div class="card-sponsor-name">${gameState.sponsorName || ''}</div>
                 </div>
-                <div class="bingo-grid">${gridHtml}</div>
+                <div class="bingo-grid">${headersHtml}${cellsHtml}</div>
             `;
             return div;
         }
         
         function printCards() { 
-            const container = document.getElementById('cardsContainer');
+            const container = getEl('cardsContainer');
             container.innerHTML = '';
-            Object.values(gameState.cards).forEach(card => {
-                container.appendChild(renderCard(card));
-            });
+            Object.values(gameState.cards).forEach(card => container.appendChild(renderCard(card)));
             
-            setTimeout(() => {
-                window.print();
-            }, 500);
+            setTimeout(() => window.print(), 500);
         }
         
         function callNextNumber() {
@@ -2066,7 +2025,6 @@
             gameState.calledNumbers.push(number);
             
             speakNumber(number);
-            
             saveGameState();
             updateDisplay(number);
             updateStats();
@@ -2074,10 +2032,9 @@
         }
         
         function updateDisplay(number) {
-            const letter = getBingoLetter(number);
-            const display = `${letter}-${number}`;
-            document.getElementById('currentNumber').textContent = display;
-            document.getElementById('playerCurrentNumber').textContent = display;
+            const display = number ? `${getBingoLetter(number)}-${number}` : '--';
+            getEl('currentNumber').textContent = display;
+            getEl('playerCurrentNumber').textContent = display;
         }
         
         function getBingoLetter(num) {
@@ -2089,19 +2046,19 @@
         }
         
         function updateStats() {
-            document.getElementById('calledCount').textContent = gameState.calledNumbers.length;
-            document.getElementById('remainingCount').textContent = gameState.availableNumbers.length;
+            getEl('calledCount').textContent = gameState.calledNumbers.length;
+            getEl('remainingCount').textContent = gameState.availableNumbers.length;
         }
         
         function toggleAutoCall() {
-            const btn = document.getElementById('autoBtn');
+            const btn = getEl('autoBtn');
+            
             if (gameState.isAutoCalling) {
                 clearInterval(gameState.autoCallInterval);
                 gameState.isAutoCalling = false;
                 btn.textContent = 'Auto Call: OFF';
             } else {
-                const interval = gameState.autoCallSeconds * 1000;
-                gameState.autoCallInterval = setInterval(callNextNumber, interval);
+                gameState.autoCallInterval = setInterval(callNextNumber, gameState.autoCallSeconds * 1000);
                 gameState.isAutoCalling = true;
                 btn.textContent = `Auto Call: ON (${gameState.autoCallSeconds}s)`;
                 callNextNumber();
@@ -2109,21 +2066,20 @@
         }
         
         function resetGame() {
-            if (confirm('Reset game? This clears called numbers but keeps cards.')) {
-                gameState.calledNumbers = [];
-                resetAvailableNumbers();
-                saveGameState();
-                document.getElementById('currentNumber').textContent = '--';
-                document.getElementById('playerCurrentNumber').textContent = '--';
-                createBoards();
-                updateStats();
-            }
+            if (!confirm('Reset game? This clears called numbers but keeps cards.')) return;
+            
+            gameState.calledNumbers = [];
+            resetAvailableNumbers();
+            saveGameState();
+            updateDisplay(null);
+            createBoards();
+            updateStats();
         }
         
         function verifyWinner() {
-            const cardId = document.getElementById('verifyCardId').value.trim().toUpperCase();
+            const cardId = getEl('verifyCardId').value.trim().toUpperCase();
             const card = gameState.cards[cardId];
-            const resultDiv = document.getElementById('verificationResult');
+            const resultDiv = getEl('verificationResult');
             
             if (!card) {
                 resultDiv.innerHTML = '<div class="verification-result not-winner"><h3>Card Not Found</h3></div>';
@@ -2131,12 +2087,13 @@
             }
             
             const isWinner = checkWinPattern(card, gameState.currentPattern);
+            const resultClass = isWinner ? 'winner' : 'not-winner';
+            const title = isWinner ? 'WINNER!' : 'Not a Winner';
+            const message = isWinner ? 
+                `Card ${cardId} has ${patternNames[gameState.currentPattern]}!` : 
+                `Card ${cardId} does not have ${patternNames[gameState.currentPattern]}.`;
             
-            if (isWinner) {
-                resultDiv.innerHTML = `<div class="verification-result winner"><h3>WINNER!</h3><p>Card ${cardId} has ${patternNames[gameState.currentPattern]}!</p></div>`;
-            } else {
-                resultDiv.innerHTML = `<div class="verification-result not-winner"><h3>Not a Winner</h3><p>Card ${cardId} does not have ${patternNames[gameState.currentPattern]}.</p></div>`;
-            }
+            resultDiv.innerHTML = `<div class="verification-result ${resultClass}"><h3>${title}</h3><p>${message}</p></div>`;
         }
         
         /**
@@ -2155,18 +2112,12 @@
             }
             
             switch(patternKey) {
-                case 'normal':
-                    return checkLine(marked);
-                case 'outside':
-                    return checkOutside(marked);
-                case 'x':
-                    return checkXPattern(marked);
-                case 'plus':
-                    return checkPlus(marked);
-                case 'checkerboard':
-                    return checkCheckerboard(marked);
-                default:
-                    return checkHorizontal(marked);
+                case 'normal': return checkLine(marked);
+                case 'outside': return checkOutside(marked);
+                case 'x': return checkXPattern(marked);
+                case 'plus': return checkPlus(marked);
+                case 'checkerboard': return checkCheckerboard(marked);
+                default: return checkHorizontal(marked);
             }
         }
         
@@ -2183,7 +2134,7 @@
         function matchesPatternMatrix(marked, patternMatrix) {
             for (let row = 0; row < BINGO_SIZE; row++) {
                 for (let col = 0; col < BINGO_SIZE; col++) {
-                    if (patternMatrix[row][col] === 1 && !marked[row][col]) return false;
+                    if (patternMatrix[row][col] === P.REQUIRED && !marked[row][col]) return false;
                 }
             }
             return true;
@@ -2219,10 +2170,7 @@
         
         function checkOutside(marked) {
             for (let i = 0; i < 5; i++) {
-                if (!marked[0][i]) return false;
-                if (!marked[4][i]) return false;
-                if (!marked[i][0]) return false;
-                if (!marked[i][4]) return false;
+                if (!marked[0][i] || !marked[4][i] || !marked[i][0] || !marked[i][4]) return false;
             }
             return true;
         }
@@ -2233,261 +2181,303 @@
         }
         
         function checkPlus(marked) {
-            if (!marked[2][0] || !marked[2][1] || !marked[2][3] || !marked[2][4]) return false;
-            if (!marked[0][2] || !marked[1][2] || !marked[3][2] || !marked[4][2]) return false;
-            return marked[2][2];
+            return marked[2][0] && marked[2][1] && marked[2][3] && marked[2][4] &&
+                   marked[0][2] && marked[1][2] && marked[3][2] && marked[4][2] && marked[2][2];
         }
         
         function checkCheckerboard(marked) {
             for (let row = 0; row < 5; row++) {
                 for (let col = 0; col < 5; col++) {
-                    if ((row + col) % 2 === 0 && row !== 2 && col !== 2) {
-                        if (!marked[row][col]) return false;
-                    }
+                    if ((row + col) % 2 === 0 && row !== 2 && col !== 2 && !marked[row][col]) return false;
                 }
             }
             return marked[2][2];
         }
         
         function openPlayerWindow() {
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const bgColor = isDarkMode ? '#1a1a2e' : '#f0f2f5';
-            const textColor = isDarkMode ? '#eee' : '#1a237e';
-            const boardBg = isDarkMode ? '#16213e' : 'white';
-            const cellBg = isDarkMode ? '#16213e' : '#fafafa';
-            const cellColor = isDarkMode ? '#888' : '#999';
-            const letterBg = isDarkMode ? '#64b5f6' : '#1a237e';
-            const letterColor = isDarkMode ? '#1a1a2e' : 'white';
+            const isDark = document.body.classList.contains('dark-mode');
+            const colors = {
+                bg: isDark ? '#1a1a2e' : '#f0f2f5',
+                text: isDark ? '#eee' : '#1a237e',
+                board: isDark ? '#16213e' : 'white',
+                cell: isDark ? '#16213e' : '#fafafa',
+                cellText: isDark ? '#888' : '#999',
+                letter: isDark ? '#64b5f6' : '#1a237e',
+                letterText: isDark ? '#1a1a2e' : 'white',
+                border: isDark ? '#64b5f6' : '#1a237e'
+            };
             
-            const pattern = patterns[gameState.currentPattern];
-            let patternHtml = '';
-            for (let row = 0; row < 5; row++) {
-                for (let col = 0; col < 5; col++) {
-                    const isRequired = pattern[row][col] === 1;
-                    const isFree = pattern[row][col] === 2;
-                    const bg = isRequired ? '#e53935' : isFree ? '#ffeb3b' : 'transparent';
-                    const borderColor = isDarkMode ? '#64b5f6' : '#ddd';
-                    patternHtml += `<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:2px solid ${borderColor};display:inline-block;margin:2px;"></div>`;
-                }
-                patternHtml += '<br>';
+            const leftLogo = logoData.left[isDark ? 'dark' : 'light'];
+            const rightLogo = logoData.right[isDark ? 'dark' : 'light'];
+            
+            // Check if window already exists and focus it
+            if (window.playerWindow && !window.playerWindow.closed) {
+                window.playerWindow.focus();
+                return;
             }
             
-            const leftLogo = logoData.left[isDarkMode ? 'dark' : 'light'];
-            const rightLogo = logoData.right[isDarkMode ? 'dark' : 'light'];
+            // Open at full available screen size (close to maximized)
+            const width = screen.availWidth;
+            const height = screen.availHeight;
+            const left = 0;
+            const top = 0;
             
-            const win = window.open('', 'PlayerView', 'width=1024,height=768');
+            const win = window.open('', 'PlayerView', `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no`);
+            window.playerWindow = win;
+            
+            // If the window opened smaller than requested (browser restrictions), 
+            // try to resize it after a brief delay
+            setTimeout(() => {
+                if (win.outerWidth < width - 100 || win.outerHeight < height - 100) {
+                    win.resizeTo(width, height);
+                    win.moveTo(0, 0);
+                }
+            }, 100);
+            
             win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-    <title>Bingo Master - Player View</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            padding: 30px;
-            background: ${bgColor};
-            color: ${textColor};
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .fullscreen-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 30px;
-            font-size: 16px;
-            background: ${isDarkMode ? '#64b5f6' : '#1a237e'};
-            color: ${isDarkMode ? '#1a1a2e' : 'white'};
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-        }
-        .event { 
-            font-size: 72px; 
-            font-weight: bold; 
-            color: ${textColor}; 
-            margin-bottom: 10px; 
-        }
-        .sponsor { 
-            font-size: 36px; 
-            color: ${isDarkMode ? '#aaa' : '#666'}; 
-            margin-bottom: 20px; 
-        }
-        .pattern { 
-            font-size: 28px; 
-            color: ${textColor}; 
-            margin-bottom: 15px; 
-        }
-        .pattern-grid { 
-            display: inline-block; 
-            margin: 10px; 
-            padding: 15px; 
-            background: ${boardBg}; 
-            border-radius: 8px; 
-            border: 2px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
-        }
-        .current { 
-            font-size: 200px; 
-            font-weight: bold; 
-            color: ${textColor}; 
-            margin: 30px 0; 
-            line-height: 1; 
-        }
-        .board { 
-            display: grid;
-            grid-template-columns: 70px repeat(15, 52px);
-            gap: 3px;
-            border: 3px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            background: ${boardBg};
-            margin: 0 auto;
-        }
-        .bingo-cell { 
-            height: 52px;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 22px; 
-            font-weight: bold;
-            border: 1px solid ${isDarkMode ? '#0f3460' : '#ddd'}; 
-            background: ${cellBg};
-            color: ${cellColor};
-        }
-        .bingo-cell.letter { 
-            background: ${letterBg}; 
-            color: ${letterColor}; 
-            font-size: 32px; 
-            font-weight: bold;
-        }
-        .bingo-cell.called { 
-            background: #4caf50; 
-            color: white; 
-        }
-        .bingo-cell.last-called { 
-            background: #ffeb3b; 
-            color: #1a237e; 
-            border: 3px solid #ff5722; 
-        }
-    </style>
-</head>
-<body>
-    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
-    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
-        ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-        <div>
-            <div class="event">${gameState.eventName}</div>
-            <div class="sponsor">${gameState.sponsorName}</div>
-        </div>
-        ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-    </div>
-    <div class="pattern">Pattern: ${patternNames[gameState.currentPattern]}</div>
-    <div class="pattern-grid">${patternHtml}</div>
-    <div class="current" id="pcur">--</div>
-    <div class="board" id="pboard"></div>
-    <script>
-        function createBoard() {
-            const b = document.getElementById('pboard');
-            const letters = ['B','I','N','G','O'];
-            const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
-            
-            for(let row=0; row<5; row++) {
-                const lc = document.createElement('div');
-                lc.className = 'bingo-cell letter';
-                lc.textContent = letters[row];
-                b.appendChild(lc);
+        <html>
+        <head>
+            <title>Bingo Master - Player View</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: Arial, sans-serif; 
+                    text-align: center; 
+                    padding: 30px;
+                    background: ${colors.bg};
+                    color: ${colors.text};
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+                .fullscreen-btn {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 15px 30px;
+                    font-size: 16px;
+                    background: ${colors.letter};
+                    color: ${colors.letterText};
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                }
+                .event { font-size: 72px; font-weight: bold; color: ${colors.text}; margin-bottom: 10px; }
+                .sponsor { font-size: 36px; color: ${isDark ? '#aaa' : '#666'}; margin-bottom: 20px; }
+                .pattern { font-size: 28px; color: ${colors.text}; margin-bottom: 15px; }
+                .pattern-grid { 
+                    display: grid;
+                    grid-template-columns: repeat(5, 30px);
+                    gap: 4px;
+                    margin: 10px auto; 
+                    padding: 15px; 
+                    background: ${colors.board}; 
+                    border-radius: 8px; 
+                    border: 2px solid ${colors.border}; 
+                }
+                .pattern-cell {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    border: 2px solid ${colors.border};
+                    background: transparent;
+                }
+                .pattern-cell.required { background: #e53935; }
+                .pattern-cell.free { background: #ffeb3b; }
+                .current { font-size: 200px; font-weight: bold; color: ${colors.text}; margin: 30px 0; line-height: 1; }
+                .board { 
+                    display: grid;
+                    grid-template-columns: 70px repeat(15, 52px);
+                    gap: 3px;
+                    border: 3px solid ${colors.border};
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: ${colors.board};
+                    margin: 0 auto;
+                }
+                .bingo-cell { 
+                    height: 52px;
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    font-size: 22px; 
+                    font-weight: bold;
+                    border: 1px solid ${isDark ? '#0f3460' : '#ddd'}; 
+                    background: ${colors.cell};
+                    color: ${colors.cellText};
+                }
+                .bingo-cell.letter { background: ${colors.letter}; color: ${colors.letterText}; font-size: 32px; font-weight: bold; }
+                .bingo-cell.called { background: #4caf50; color: white; }
+                .bingo-cell.last-called { background: #ffeb3b; color: #1a237e; border: 3px solid #ff5722; }
+            </style>
+        </head>
+        <body>
+            <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
+                ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+                <div>
+                    <div class="event" id="eventName">${gameState.eventName}</div>
+                    <div class="sponsor" id="sponsorName">${gameState.sponsorName}</div>
+                </div>
+                ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+            </div>
+            <div class="pattern" id="patternText">Pattern: ${patternNames[gameState.currentPattern]}</div>
+            <div class="pattern-grid" id="patternGrid"></div>
+            <div class="current" id="pcur">--</div>
+            <div class="board" id="pboard"></div>
+            <script>
+                const P = { EMPTY: 0, REQUIRED: 1, FREE: 2 };
+                const patterns = {
+                    normal: [[0,0,0,0,0],[0,0,0,0,0],[1,1,2,1,1],[0,0,0,0,0],[0,0,0,0,0]],
+                    corners: [[1,0,0,0,1],[0,0,0,0,0],[0,0,2,0,0],[0,0,0,0,0],[1,0,0,0,1]],
+                    outside: [[1,1,1,1,1],[1,0,0,0,1],[1,0,2,0,1],[1,0,0,0,1],[1,1,1,1,1]],
+                    coverall: [[1,1,1,1,1],[1,1,1,1,1],[1,1,2,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+                    inner: [[0,0,0,0,0],[0,1,1,1,0],[0,1,2,1,0],[0,1,1,1,0],[0,0,0,0,0]],
+                    windmill: [[1,1,0,1,1],[1,1,0,1,1],[0,0,2,0,0],[1,1,0,1,1],[1,1,0,1,1]],
+                    x: [[1,0,0,0,1],[0,1,0,1,0],[0,0,2,0,0],[0,1,0,1,0],[1,0,0,0,1]],
+                    plus: [[0,0,1,0,0],[0,0,1,0,0],[1,1,2,1,1],[0,0,1,0,0],[0,0,1,0,0]],
+                    checkerboard: [[1,0,1,0,1],[0,1,0,1,0],[1,0,2,0,1],[0,1,0,1,0],[1,0,1,0,1]],
+                    smiley: [[0,1,0,1,0],[0,1,0,1,0],[0,0,2,0,0],[1,0,0,0,1],[0,1,1,1,0]],
+                    martini: [[1,1,1,1,1],[0,1,1,1,0],[0,0,2,0,0],[0,0,1,0,0],[0,1,1,1,0]],
+                    bowtie: [[0,0,0,0,0],[1,1,0,1,1],[1,1,1,1,1],[1,1,0,1,1],[0,0,0,0,0]]
+                };
+                const patternNames = {
+                    normal: 'Normal (Any Line)', corners: '4 Corners', outside: 'Outside Edge',
+                    coverall: 'Cover All', inner: 'Inner Frame', windmill: 'Windmill',
+                    x: 'X', plus: 'Plus', checkerboard: 'Checkerboard', smiley: 'Smiley Face',
+                    martini: 'Martini Glass', bowtie: 'Bow Tie'
+                };
                 
-                for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
-                    const c = document.createElement('div');
-                    c.id = 'p-'+n;
-                    c.className = 'bingo-cell';
-                    c.textContent = n;
-                    b.appendChild(c);
+                function createBoard() {
+                    const b = document.getElementById('pboard');
+                    const letters = ['B','I','N','G','O'];
+                    const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+                    
+                    for(let row=0; row<5; row++) {
+                        const lc = document.createElement('div');
+                        lc.className = 'bingo-cell letter';
+                        lc.textContent = letters[row];
+                        b.appendChild(lc);
+                        
+                        for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
+                            const c = document.createElement('div');
+                            c.id = 'p-'+n;
+                            c.className = 'bingo-cell';
+                            c.textContent = n;
+                            b.appendChild(c);
+                        }
+                    }
                 }
-            }
-        }
-        function update() {
-            const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
-            const c = d.calledNumbers[d.calledNumbers.length-1];
-            const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
-            document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
-            d.calledNumbers.forEach(n => {
-                const cell = document.getElementById('p-'+n);
-                if(cell) cell.classList.add('called');
-            });
-            const last = d.calledNumbers[d.calledNumbers.length-1];
-            if(last) {
-                const lastCell = document.getElementById('p-'+last);
-                if(lastCell) {
-                    lastCell.classList.add('last-called');
+                
+                function updatePatternGrid(patternKey) {
+                    const grid = document.getElementById('patternGrid');
+                    const pattern = patterns[patternKey] || patterns.normal;
+                    grid.innerHTML = '';
+                    
+                    for(let row=0; row<5; row++) {
+                        for(let col=0; col<5; col++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'pattern-cell';
+                            if(pattern[row][col] === P.REQUIRED) cell.classList.add('required');
+                            else if(pattern[row][col] === P.FREE) cell.classList.add('free');
+                            grid.appendChild(cell);
+                        }
+                    }
                 }
-            }
-        }
-        function toggleFS() {
-            const btn = document.getElementById('fsBtn');
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-                btn.textContent = '⛶ Exit Full Screen';
-            } else {
-                document.exitFullscreen();
-                btn.textContent = '⛶ Full Screen';
-            }
-        }
-        document.addEventListener('fullscreenchange', () => {
-            document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
-        });
-        createBoard();
-        setInterval(update, 1000);
-        update();
-    <\/script>
-</body>
-</html>`);
+                
+                function update() {
+                    const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
+                    const c = d.calledNumbers?.[d.calledNumbers.length-1];
+                    const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
+                    
+                    // Update current number display
+                    document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
+                    
+                    // Update pattern if changed
+                    if(d.currentPattern) {
+                        document.getElementById('patternText').textContent = 'Pattern: ' + (patternNames[d.currentPattern] || 'Normal (Any Line)');
+                        updatePatternGrid(d.currentPattern);
+                    }
+                    
+                    // Clear all cells first
+                    document.querySelectorAll('.bingo-cell').forEach(cell => {
+                        cell.classList.remove('called', 'last-called');
+                    });
+                    
+                    // Re-apply called states
+                    d.calledNumbers?.forEach((n, index) => {
+                        const cell = document.getElementById('p-'+n);
+                        if(cell) {
+                            cell.classList.add('called');
+                            if(index === d.calledNumbers.length - 1) {
+                                cell.classList.add('last-called');
+                            }
+                        }
+                    });
+                }
+                
+                function toggleFS() {
+                    const btn = document.getElementById('fsBtn');
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen();
+                        btn.textContent = '⛶ Exit Full Screen';
+                    } else {
+                        document.exitFullscreen();
+                        btn.textContent = '⛶ Full Screen';
+                    }
+                }
+                
+                document.addEventListener('fullscreenchange', () => {
+                    document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
+                });
+                
+                createBoard();
+                updatePatternGrid('${gameState.currentPattern}');
+                setInterval(update, 1000);
+                update();
+            <\/script>
+        </body>
+        </html>`);
         }
         
         function clearAllData() {
-            if (confirm('Clear ALL data? This cannot be undone!')) {
-                localStorage.removeItem(STORAGE_KEYS.GAME_STATE);
-                localStorage.removeItem(STORAGE_KEYS.SETTINGS);
-                localStorage.removeItem(STORAGE_KEYS.LOGOS);
-                
-                gameState = { 
-                    calledNumbers: [], 
-                    availableNumbers: [], 
-                    cards: {}, 
-                    autoCallInterval: null, 
-                    isAutoCalling: false, 
-                    currentPattern: 'normal', 
-                    eventName: 'Charity Bingo Night', 
-                    sponsorName: 'Sponsored by Local Business', 
-                    cardPrefix: 'A-', 
-                    autoCallSeconds: 5 
-                };
-                
-                logoData = { left: { light: null, dark: null }, right: { light: null, dark: null } };
-                
-                selectedCards.clear();
-                resetAvailableNumbers();
-                createBoards();
-                document.getElementById('cardsContainer').innerHTML = '';
-                updateCardCount();
-                updateCardList();
-                
-                // Clear logo previews
-                ['left', 'right'].forEach(position => {
-                    ['light', 'dark'].forEach(mode => {
-                        const previewId = `${position}${mode.charAt(0).toUpperCase() + mode.slice(1)}LogoPreview`;
-                        document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
-                    });
+            if (!confirm('Clear ALL data? This cannot be undone!')) return;
+            
+            Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+            
+            gameState = { 
+                calledNumbers: [], 
+                availableNumbers: [], 
+                cards: {}, 
+                autoCallInterval: null, 
+                isAutoCalling: false, 
+                currentPattern: 'normal', 
+                eventName: 'Charity Bingo Night', 
+                sponsorName: 'Sponsored by Local Business', 
+                cardPrefix: 'A-', 
+                autoCallSeconds: 5 
+            };
+            
+            logoData = { left: { light: null, dark: null }, right: { light: null, dark: null } };
+            
+            selectedCards.clear();
+            resetAvailableNumbers();
+            createBoards();
+            getEl('cardsContainer').innerHTML = '';
+            updateCardUI();
+            
+            ['left', 'right'].forEach(pos => {
+                ['light', 'dark'].forEach(mode => {
+                    const previewId = `${pos}${capitalize(mode)}LogoPreview`;
+                    getEl(previewId).innerHTML = '<span class="placeholder">No logo</span>';
                 });
-                
-                alert('All data cleared!');
-            }
+            });
+            
+            alert('All data cleared!');
         }
         
         // Start the app
