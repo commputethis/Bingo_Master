@@ -10,22 +10,37 @@
             padding: 0; 
             box-sizing: border-box; 
         }
+        
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary-color: #1a237e;
+            --primary-light: #64b5f6;
+            --dark-bg: #1a1a2e;
+            --dark-panel: #16213e;
+            --dark-input: #0f3460;
+            --light-bg: #f0f2f5;
+            --accent-green: #4caf50;
+            --accent-green-dark: #2e7d32;
+            --accent-blue: #2196f3;
+            --accent-red: #f44336;
+            --accent-red-dark: #c62828;
+            --accent-orange: #ff9800;
+            --accent-yellow: #ffeb3b;
+        }
+        
         /* Dark Mode (Default) */
         body.dark-mode {
-            background: #1a1a2e;
+            background: var(--dark-bg);
             color: #eee;
         }
 
         body.dark-mode .container {
-            background: #1a1a2e;
+            background: var(--dark-bg);
         }
 
-        body.dark-mode h1 {
-            color: #64b5f6;
-        }
-
+        body.dark-mode h1,
         body.dark-mode h2 {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .subtitle {
@@ -33,22 +48,22 @@
         }
 
         body.dark-mode .tab {
-            background: #16213e;
-            border-color: #64b5f6;
-            color: #64b5f6;
+            background: var(--dark-panel);
+            border-color: var(--primary-light);
+            color: var(--primary-light);
         }
 
         body.dark-mode .tab:hover {
-            background: #0f3460;
+            background: var(--dark-input);
         }
 
         body.dark-mode .tab.active {
-            background: #64b5f6;
-            color: #1a1a2e;
+            background: var(--primary-light);
+            color: var(--dark-bg);
         }
 
         body.dark-mode .panel {
-            background: #16213e;
+            background: var(--dark-panel);
             color: #eee;
         }
 
@@ -58,50 +73,50 @@
 
         body.dark-mode .input-group input,
         body.dark-mode .input-group select {
-            background: #0f3460;
-            border-color: #64b5f6;
+            background: var(--dark-input);
+            border-color: var(--primary-light);
             color: #eee;
         }
 
         body.dark-mode .card-count {
-            background: #0f3460;
+            background: var(--dark-input);
             color: #eee;
         }
 
         body.dark-mode .card-count strong {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .reprint-section {
-            background: #0f3460;
+            background: var(--dark-input);
         }
 
         body.dark-mode .card-list {
-            background: #16213e;
-            border-color: #64b5f6;
+            background: var(--dark-panel);
+            border-color: var(--primary-light);
         }
 
         body.dark-mode .card-list-item.selected {
-            background: #4caf50;
+            background: var(--accent-green);
             color: white;
             border: 2px solid #81c784;
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
         }
 
         body.dark-mode .card-list-item {
-            background: #1a1a2e;
-            border: 1px solid #64b5f6;
-            color: #64b5f6;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary-light);
+            color: var(--primary-light);
         }
 
         body.dark-mode .card-list-item:hover {
-            background: #64b5f6;
-            color: #1a1a2e;
+            background: var(--primary-light);
+            color: var(--dark-bg);
         }
 
         body.dark-mode .pattern-display-container {
-            background: #0f3460;
-            border-color: #64b5f6;
+            background: var(--dark-input);
+            border-color: var(--primary-light);
         }
 
         body.dark-mode .pattern-display-title {
@@ -109,11 +124,11 @@
         }
 
         body.dark-mode .pattern-name {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .stat-box {
-            background: #0f3460;
+            background: var(--dark-input);
         }
 
         body.dark-mode .stat-box label {
@@ -121,7 +136,7 @@
         }
 
         body.dark-mode .stat-box value {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .caller-display,
@@ -131,36 +146,36 @@
         }
 
         body.dark-mode .current-number-display {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .bingo-board {
-            border-color: #64b5f6;
+            border-color: var(--primary-light);
         }
 
         body.dark-mode .bingo-board-cell {
-            background: #16213e;
+            background: var(--dark-panel);
             color: #888;
-            border-color: #0f3460;
+            border-color: var(--dark-input);
         }
 
         body.dark-mode .bingo-board-cell.letter {
-            background: #64b5f6;
-            color: #1a1a2e;
+            background: var(--primary-light);
+            color: var(--dark-bg);
         }
 
         body.dark-mode .bingo-board-cell.called {
-            background: #4caf50;
+            background: var(--accent-green);
             color: white;
         }
 
         body.dark-mode .bingo-board-cell.last-called {
-            background: #ffeb3b;
-            color: #1a1a2e;
+            background: var(--accent-yellow);
+            color: var(--dark-bg);
         }
 
         body.dark-mode .event-name {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode .sponsor-name {
@@ -168,60 +183,56 @@
         }
 
         body.dark-mode .player-current {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode #callerBoard.manual-mode .bingo-board-cell:not(.letter):hover {
-            background: #0f3460;
-            border-color: #64b5f6;
+            background: var(--dark-input);
+            border-color: var(--primary-light);
         }
 
         body.dark-mode #settings h2,
         body.dark-mode #settings h3 { 
-            color: #64b5f6 !important; 
+            color: var(--primary-light) !important; 
         }
 
         body.dark-mode .settings-column {
-            background: #16213e;
-            border-color: #0f3460;
+            background: var(--dark-panel);
+            border-color: var(--dark-input);
         }
 
         body.dark-mode .settings-column h3 {
-            color: #64b5f6 !important;
-            border-color: #64b5f6 !important;
+            color: var(--primary-light) !important;
+            border-color: var(--primary-light) !important;
         }
 
         body.dark-mode #caller #manualEntrySection,
         body.dark-mode #manualEntrySection {
-            background: #16213e !important;
-            border: 1px solid #64b5f6;
+            background: var(--dark-panel) !important;
+            border: 1px solid var(--primary-light);
         }
 
         body.dark-mode #manualEntrySection h3 {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode #manualEntrySection p {
             color: #ccc;
         }
 
-        body.dark-mode #manualError {
-            color: #ff6b6b !important;
-        }
-
         body.dark-mode #manualEntrySection button.secondary {
-            background: #ff9800;
-            color: #1a1a2e;
+            background: var(--accent-orange);
+            color: var(--dark-bg);
         }
 
         body.dark-mode #manage h2 {
-            color: #64b5f6 !important;
+            color: var(--primary-light) !important;
         }
 
         body.dark-mode #manage div[style*="background: #f5f5f5"],
         body.dark-mode #manage div[style*="background:#f5f5f5"] {
-            background: #16213e !important;
-            border: 1px solid #64b5f6;
+            background: var(--dark-panel) !important;
+            border: 1px solid var(--primary-light);
         }
 
         body.dark-mode #manage div[style*="background: #f5f5f5"] p,
@@ -231,7 +242,7 @@
 
         body.dark-mode #manage div[style*="background: #f5f5f5"] h3,
         body.dark-mode #manage div[style*="background:#f5f5f5"] h3 {
-            color: #64b5f6;
+            color: var(--primary-light);
         }
 
         body.dark-mode #manage div[style*="background: #f5f5f5"] label,
@@ -246,8 +257,8 @@
             right: 20px;
             z-index: 1000;
             padding: 10px 20px;
-            background: #64b5f6;
-            color: #1a1a2e;
+            background: var(--primary-light);
+            color: var(--dark-bg);
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -260,30 +271,39 @@
         }
 
         body.light-mode .mode-toggle {
-            background: #1a237e;
+            background: var(--primary-color);
             color: white;
         }
+        
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f0f2f5; 
+            background: var(--light-bg); 
             min-height: 100vh; 
         }
+        
         .container { 
             max-width: 1200px; 
             margin: 0 auto; 
             padding: 20px; 
         }
+        
         h1 { 
             text-align: center; 
-            color: #1a237e; 
+            color: var(--primary-color); 
             margin-bottom: 10px; 
             font-size: 2.5em; 
         }
+        
+        h2 {
+            color: var(--primary-color);
+        }
+        
         .subtitle { 
             text-align: center; 
             color: #666; 
             margin-bottom: 30px; 
         }
+        
         .tabs { 
             display: flex; 
             gap: 10px; 
@@ -291,23 +311,27 @@
             flex-wrap: wrap; 
             justify-content: center; 
         }
+        
         .tab { 
             padding: 12px 24px; 
             background: #fff; 
-            border: 2px solid #1a237e; 
-            color: #1a237e; 
+            border: 2px solid var(--primary-color); 
+            color: var(--primary-color); 
             cursor: pointer; 
             border-radius: 8px; 
             font-weight: 600; 
             transition: all 0.3s; 
         }
+        
         .tab:hover { 
             background: #e8eaf6; 
         }
+        
         .tab.active { 
-            background: #1a237e; 
+            background: var(--primary-color); 
             color: white; 
         }
+        
         .panel { 
             display: none; 
             background: white; 
@@ -315,21 +339,26 @@
             border-radius: 12px; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
         }
+        
         .panel.active { 
             display: block; 
         }
+        
         .card-generator { 
             text-align: center; 
         }
+        
         .input-group { 
             margin: 20px 0; 
         }
+        
         .input-group label { 
             display: block; 
             margin-bottom: 8px; 
             font-weight: 600; 
             color: #333; 
         }
+        
         .input-group input, .input-group select { 
             padding: 12px; 
             font-size: 16px; 
@@ -337,10 +366,11 @@
             border-radius: 8px; 
             width: 250px; 
         }
+        
         button { 
             padding: 12px 30px; 
             font-size: 16px; 
-            background: #4caf50; 
+            background: var(--accent-green); 
             color: white; 
             border: none; 
             border-radius: 8px; 
@@ -349,18 +379,23 @@
             transition: background 0.3s; 
             margin: 5px; 
         }
+        
         button:hover { 
             background: #45a049; 
         }
+        
         button.secondary { 
-            background: #2196f3; 
+            background: var(--accent-blue); 
         }
+        
         button.secondary:hover { 
             background: #1976d2; 
         }
+        
         button.danger { 
-            background: #f44336; 
+            background: var(--accent-red); 
         }
+        
         button.danger:hover { 
             background: #d32f2f; 
         }
@@ -371,32 +406,37 @@
             margin: 8px; 
             padding: 12px; 
             background: white; 
-            border: 3px solid #1a237e; 
+            border: 3px solid var(--primary-color); 
             border-radius: 12px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             width: 340px;
         }
+        
         .card-header { 
             text-align: center; 
             margin-bottom: 10px; 
         }
+        
         .card-id { 
             font-size: 12px; 
             color: #666; 
             margin-bottom: 3px; 
         }
+        
         .card-event-name { 
             font-size: 18px; 
             font-weight: bold; 
-            color: #1a237e; 
+            color: var(--primary-color); 
             margin-bottom: 3px;
             line-height: 1.2;
         }
+        
         .card-sponsor-name { 
             font-size: 12px; 
             color: #666;
             line-height: 1.2;
         }
+        
         .bingo-grid { 
             display: grid; 
             grid-template-columns: repeat(5, 55px); 
@@ -404,15 +444,17 @@
             justify-content: center; 
             margin-top: 5px; 
         }
+        
         .bingo-header {
             width: 55px;
             text-align: center;
             font-size: 28px;
             font-weight: bold;
-            color: #1a237e;
+            color: var(--primary-color);
             line-height: 1;
             padding-bottom: 5px;
         }
+        
         .bingo-cell { 
             width: 55px; 
             height: 55px; 
@@ -421,27 +463,31 @@
             justify-content: center; 
             font-size: 20px; 
             font-weight: bold; 
-            border: 2px solid #1a237e; 
+            border: 2px solid var(--primary-color); 
             border-radius: 6px; 
             background: white; 
-            color: #1a237e;
+            color: var(--primary-color);
         }
+        
         .bingo-cell.header { 
-            background: #1a237e; 
+            background: var(--primary-color); 
             color: white; 
             font-size: 20px; 
         }
+        
         .bingo-cell.free { 
             background: white; 
-            color: #1a237e; 
+            color: var(--primary-color); 
             font-size: 15px; 
         }
+        
         .cards-container { 
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
             margin-top: 30px; 
         }
+        
         .card-count { 
             text-align: center; 
             padding: 15px; 
@@ -450,8 +496,9 @@
             margin: 20px 0;
             font-size: 18px;
         }
+        
         .card-count strong { 
-            color: #1a237e; 
+            color: var(--primary-color); 
             font-size: 24px; 
         }
 
@@ -463,7 +510,7 @@
         #callerBoard.manual-mode .bingo-board-cell:not(.letter):hover {
             transform: scale(1.1);
             background: #e3f2fd;
-            border-color: #2196f3;
+            border-color: var(--accent-blue);
         }
         
         /* Print Styles - 4 cards per page (2 columns x 2 rows) - LARGER CARDS */
@@ -473,26 +520,31 @@
                 background: white !important;
                 color: black !important;
             }
+            
             @page { 
                 margin: 0.5cm; 
                 size: portrait; 
             }
+            
             body { 
                 background: white; 
                 margin: 0; 
                 padding: 0; 
             }
+            
             .container { 
                 max-width: 100%; 
                 padding: 0; 
                 margin: 0; 
             }
+            
             /* Hide everything except cards */
             .tabs, .controls, button, .input-group, .card-count, h1, h2, .subtitle, 
             .reprint-section, .pattern-selector, .pattern-info, .stats, #caller, 
             #verify, #player, #settings, #manage { 
                 display: none !important; 
             }
+            
             /* Only show generator panel with cards */
             #generator { 
                 display: block !important; 
@@ -501,6 +553,7 @@
                 margin: 0; 
                 background: white;
             }
+            
             .panel.active { display: none !important; }
             #generator.panel.active { display: block !important; }
             
@@ -522,7 +575,7 @@
                 margin: 0 !important;
                 width: 380px !important;
                 padding: 10px !important;
-                border: 2px solid #1a237e !important;
+                border: 2px solid var(--primary-color) !important;
                 transform: none !important;
                 box-shadow: none !important;
             }
@@ -537,7 +590,7 @@
             .bingo-header {
                 width: 68px !important;
                 font-size: 32px !important;
-                color: #1a237e !important;
+                color: var(--primary-color) !important;
                 padding-bottom: 8px !important;
             }
             
@@ -545,9 +598,9 @@
                 width: 68px !important; 
                 height: 68px !important; 
                 font-size: 24px !important;
-                border: 2px solid #1a237e !important;
+                border: 2px solid var(--primary-color) !important;
                 background: white !important;
-                color: #1a237e !important;
+                color: var(--primary-color) !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -560,7 +613,7 @@
             
             .card-event-name { 
                 font-size: 20px !important; 
-                color: #1a237e !important;
+                color: var(--primary-color) !important;
             }
             
             .card-sponsor-name { 
@@ -576,10 +629,10 @@
         
         /* Caller Display Styles */
         .caller-display { text-align: center; padding: 20px; }
-        .current-number-display { font-size: 100px; font-weight: bold; color: #1a237e; margin: 20px 0; }
+        .current-number-display { font-size: 100px; font-weight: bold; color: var(--primary-color); margin: 20px 0; }
         .pattern-info { margin: 20px 0; }
-        .pattern-name { font-size: 24px; color: #1a237e; font-weight: bold; margin-bottom: 15px; }
-        .bingo-board { display: inline-block; margin: 20px auto; border: 3px solid #1a237e; border-radius: 8px; overflow: hidden; }
+        .pattern-name { font-size: 24px; color: var(--primary-color); font-weight: bold; margin-bottom: 15px; }
+        .bingo-board { display: inline-block; margin: 20px auto; border: 3px solid var(--primary-color); border-radius: 8px; overflow: hidden; }
         .bingo-row { display: flex; }
         .bingo-board-cell { 
             width: 55px; 
@@ -594,30 +647,32 @@
             color: #999;
         }
         .bingo-board-cell.letter { 
-            background: #1a237e; 
+            background: var(--primary-color); 
             color: white; 
             font-size: 28px; 
             width: 60px;
         }
         .bingo-board-cell.called { 
-            background: #4caf50; 
+            background: var(--accent-green); 
             color: white;
             animation: popIn 0.3s ease;
         }
         .bingo-board-cell.last-called {
-            background: #ffeb3b;
-            color: #1a237e;
+            background: var(--accent-yellow);
+            color: var(--primary-color);
             border: 3px solid #ff5722;
             animation: pulse 1s infinite;
         }
+        
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        
         .controls { margin-top: 30px; }
         .controls button { margin: 10px; padding: 15px 40px; font-size: 18px; }
         .stats { display: flex; justify-content: center; gap: 40px; margin-top: 20px; flex-wrap: wrap; }
         .stat-box { padding: 15px 30px; background: #e8eaf6; border-radius: 8px; }
         .stat-box label { display: block; font-size: 12px; color: #666; text-transform: uppercase; }
-        .stat-box value { display: block; font-size: 24px; font-weight: bold; color: #1a237e; }
+        .stat-box value { display: block; font-size: 24px; font-weight: bold; color: var(--primary-color); }
         
         /* Pattern Display Styles */
         .pattern-display-container { 
@@ -626,7 +681,7 @@
             padding: 15px; 
             background: #f5f5f5; 
             border-radius: 12px; 
-            border: 2px solid #1a237e;
+            border: 2px solid var(--primary-color);
         }
         .pattern-display-title {
             font-size: 14px;
@@ -652,54 +707,37 @@
             border-color: #c62828;
         }
         .pattern-cell.free {
-            background: #ffeb3b;
+            background: var(--accent-yellow);
             border-color: #fbc02d;
         }
         
         /* Verification Styles */
-        .verify-section { 
-            text-align: center; 
-            max-width: 700px; 
-            margin: 0 auto; 
-        }
-        .verify-input { 
-            padding: 15px; 
-            font-size: 20px; 
-            border: 2px solid #ddd; 
-            border-radius: 8px; 
-            width: 200px; 
-            text-align: center; 
-            text-transform: uppercase; 
-        }
-        .verification-result { 
-            margin-top: 30px; 
-            padding: 30px; 
-            border-radius: 12px; 
-        }
+        .verify-section { text-align: center; max-width: 700px; margin: 0 auto; }
+        .verify-input { padding: 15px; font-size: 20px; border: 2px solid #ddd; border-radius: 8px; width: 200px; text-align: center; text-transform: uppercase; }
+        .verification-result { margin-top: 30px; padding: 30px; border-radius: 12px; }
+        
         .verification-result.winner { 
             background: #c8e6c9; 
-            border: 3px solid #4caf50;
-            color: #4caf50;
+            border: 3px solid var(--accent-green);
+            color: var(--accent-green-dark);
         }
-        .verification-result.winner h3 { 
-            color: #4caf50; 
+
+        .verification-result.winner h3 {
+            color: var(--accent-green-dark);
         }
+
         .verification-result.not-winner { 
             background: #ffcdd2; 
-            border: 3px solid #f44336;
-            color: #f44336;
+            border: 3px solid var(--accent-red);
+            color: var(--accent-red-dark);
         }
-        .verification-result.not-winner h3 { 
-            color: #f44336; 
+
+        .verification-result.not-winner h3 {
+            color: var(--accent-red-dark);
         }
-        .pattern-selector { 
-            margin: 20px 0; 
-        }
-        .pattern-selector label { 
-            display: block; 
-            margin-bottom: 10px; 
-            font-weight: 600; 
-        }
+
+        .pattern-selector { margin: 20px 0; }
+        .pattern-selector label { display: block; margin-bottom: 10px; font-weight: 600; }
         
         /* Player View Styles - Fixed */
         .player-view { 
@@ -714,7 +752,7 @@
         .player-view .event-name { 
             font-size: 4vw; 
             font-weight: bold; 
-            color: #1a237e; 
+            color: var(--primary-color); 
             margin-bottom: 0;
             margin-top: 20px;
         }
@@ -742,7 +780,7 @@
         .player-view .player-current { 
             font-size: 12vw; 
             font-weight: bold; 
-            color: #1a237e; 
+            color: var(--primary-color); 
             margin: 10px 0; 
             line-height: 1; 
         }
@@ -814,15 +852,40 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            color: #1a237e;
+            color: var(--primary-color);
         }
         .card-list-item:hover {
-            background: #1a237e;
+            background: var(--primary-color);
             color: white;
         }
         .card-list-item.selected {
-            background: #4caf50;
+            background: var(--accent-green);
             color: white;
+        }
+        
+        /* Logo preview styles */
+        .logo-preview-box {
+            margin-top: 10px;
+            max-width: 150px;
+            min-height: 50px;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .logo-preview-box .placeholder {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .logo-preview-box img {
+            max-width: 150px;
+            max-height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -913,6 +976,7 @@
                     <div class="stat-box"><label>Remaining</label><value id="remainingCount">75</value></div>
                 </div>
                 <div class="bingo-board" id="callerBoard"></div>
+                
                 <!-- Manual entry section (hidden by default) -->
                 <div id="manualEntrySection" style="display: none; margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
                     <h3>Manual Mode - Click a Number to Call It</h3>
@@ -921,10 +985,11 @@
                     <button onclick="undoLastCall()" class="secondary" style="background: #ff9800;">↩️ Undo Last Call</button>
                     <button class="danger" onclick="resetGame()">Reset Game</button>
                 </div>
+                
                 <div class="controls">
-                    <button onclick="callNextNumber()">Call Next Number</button>
+                    <button onclick="callNextNumber()" id="callNextBtn">Call Next Number</button>
                     <button class="secondary" onclick="toggleAutoCall()" id="autoBtn">Auto Call: OFF</button>
-                    <button class="danger" onclick="resetGame()">Reset Game</button>
+                    <button class="danger" onclick="resetGame()" id="rstBtn">Reset Game</button>
                 </div>
             </div>
         </div>
@@ -1053,8 +1118,8 @@
                             <div class="input-group" style="margin-bottom: 20px;">
                                 <label>☀️ Light Mode:</label>
                                 <input type="file" id="leftLightLogoInput" accept="image/*" onchange="previewLogo('left', 'light')">
-                                <div id="leftLightLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                <div id="leftLightLogoPreview" class="logo-preview-box">
+                                    <span class="placeholder">No logo</span>
                                 </div>
                                 <button onclick="clearLogo('left', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
                             </div>
@@ -1062,8 +1127,8 @@
                             <div class="input-group">
                                 <label>🌙 Dark Mode:</label>
                                 <input type="file" id="leftDarkLogoInput" accept="image/*" onchange="previewLogo('left', 'dark')">
-                                <div id="leftDarkLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                <div id="leftDarkLogoPreview" class="logo-preview-box">
+                                    <span class="placeholder">No logo</span>
                                 </div>
                                 <button onclick="clearLogo('left', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
                             </div>
@@ -1076,8 +1141,8 @@
                             <div class="input-group" style="margin-bottom: 20px;">
                                 <label>☀️ Light Mode:</label>
                                 <input type="file" id="rightLightLogoInput" accept="image/*" onchange="previewLogo('right', 'light')">
-                                <div id="rightLightLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                <div id="rightLightLogoPreview" class="logo-preview-box">
+                                    <span class="placeholder">No logo</span>
                                 </div>
                                 <button onclick="clearLogo('right', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
                             </div>
@@ -1085,8 +1150,8 @@
                             <div class="input-group">
                                 <label>🌙 Dark Mode:</label>
                                 <input type="file" id="rightDarkLogoInput" accept="image/*" onchange="previewLogo('right', 'dark')">
-                                <div id="rightDarkLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                <div id="rightDarkLogoPreview" class="logo-preview-box">
+                                    <span class="placeholder">No logo</span>
                                 </div>
                                 <button onclick="clearLogo('right', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
                             </div>
@@ -1127,6 +1192,20 @@
     </div>
 
     <script>
+        // Constants
+        const BINGO_SIZE = 5;
+        const MAX_NUMBER = 75;
+        const NUMBERS_PER_COLUMN = 15;
+        const STORAGE_KEYS = {
+            GAME_STATE: 'bingoGameState',
+            SETTINGS: 'bingoSettings',
+            LOGOS: 'bingoLogos',
+            DARK_MODE: 'bingoDarkMode',
+            AUDIO: 'bingoAudioSettings',
+            CALLING_MODE: 'bingoCallingMode'
+        };
+        
+        // Game state
         let gameState = { 
             calledNumbers: [], 
             availableNumbers: [], 
@@ -1142,134 +1221,67 @@
 
         let selectedCards = new Set();
 
+        // Pattern names map
         const patternNames = {
-            'normal': 'Normal (Any Line)',
-            'corners': '4 Corners',
-            'outside': 'Outside Edge',
-            'coverall': 'Cover All',
-            'inner': 'Inner Frame',
-            'windmill': 'Windmill',
-            'x': 'X',
-            'plus': 'Plus',
-            'checkerboard': 'Checkerboard',
-            'smiley': 'Smiley Face',
-            'martini': 'Martini Glass',
-            'bowtie': 'Bow Tie'
+            normal: 'Normal (Any Line)',
+            corners: '4 Corners',
+            outside: 'Outside Edge',
+            coverall: 'Cover All',
+            inner: 'Inner Frame',
+            windmill: 'Windmill',
+            x: 'X',
+            plus: 'Plus',
+            checkerboard: 'Checkerboard',
+            smiley: 'Smiley Face',
+            martini: 'Martini Glass',
+            bowtie: 'Bow Tie'
         };
 
         // Pattern definitions (5x5 grid, 1 = required, 0 = not required, 2 = free space)
         const patterns = {
-            'normal': [
-                [0,0,0,0,0],
-                [0,0,0,0,0],
-                [1,1,2,1,1],
-                [0,0,0,0,0],
-                [0,0,0,0,0]
-            ],
-            'corners': [
-                [1,0,0,0,1],
-                [0,0,0,0,0],
-                [0,0,2,0,0],
-                [0,0,0,0,0],
-                [1,0,0,0,1]
-            ],
-            'outside': [
-                [1,1,1,1,1],
-                [1,0,0,0,1],
-                [1,0,2,0,1],
-                [1,0,0,0,1],
-                [1,1,1,1,1]
-            ],
-            'coverall': [
-                [1,1,1,1,1],
-                [1,1,1,1,1],
-                [1,1,2,1,1],
-                [1,1,1,1,1],
-                [1,1,1,1,1]
-            ],
-            'inner': [
-                [0,0,0,0,0],
-                [0,1,1,1,0],
-                [0,1,2,1,0],
-                [0,1,1,1,0],
-                [0,0,0,0,0]
-            ],
-            'windmill': [
-                [1,1,0,1,1],
-                [1,1,0,1,1],
-                [0,0,2,0,0],
-                [1,1,0,1,1],
-                [1,1,0,1,1]
-            ],
-            'x': [
-                [1,0,0,0,1],
-                [0,1,0,1,0],
-                [0,0,2,0,0],
-                [0,1,0,1,0],
-                [1,0,0,0,1]
-            ],
-            'plus': [
-                [0,0,1,0,0],
-                [0,0,1,0,0],
-                [1,1,2,1,1],
-                [0,0,1,0,0],
-                [0,0,1,0,0]
-            ],
-            'checkerboard': [
-                [1,0,1,0,1],
-                [0,1,0,1,0],
-                [1,0,2,0,1],
-                [0,1,0,1,0],
-                [1,0,1,0,1]
-            ],
-            'smiley': [
-                [0,1,0,1,0],
-                [0,1,0,1,0],
-                [0,0,2,0,0],
-                [1,0,0,0,1],
-                [0,1,1,1,0]
-            ],
-            'martini': [
-                [1,1,1,1,1],
-                [0,1,1,1,0],
-                [0,0,2,0,0],
-                [0,0,1,0,0],
-                [0,1,1,1,0]
-            ],
-            'bowtie': [
-                [0,0,0,0,0],
-                [1,1,0,1,1],
-                [1,1,1,1,1],
-                [1,1,0,1,1],
-                [0,0,0,0,0]
-            ]
+            normal: [[0,0,0,0,0],[0,0,0,0,0],[1,1,2,1,1],[0,0,0,0,0],[0,0,0,0,0]],
+            corners: [[1,0,0,0,1],[0,0,0,0,0],[0,0,2,0,0],[0,0,0,0,0],[1,0,0,0,1]],
+            outside: [[1,1,1,1,1],[1,0,0,0,1],[1,0,2,0,1],[1,0,0,0,1],[1,1,1,1,1]],
+            coverall: [[1,1,1,1,1],[1,1,1,1,1],[1,1,2,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+            inner: [[0,0,0,0,0],[0,1,1,1,0],[0,1,2,1,0],[0,1,1,1,0],[0,0,0,0,0]],
+            windmill: [[1,1,0,1,1],[1,1,0,1,1],[0,0,2,0,0],[1,1,0,1,1],[1,1,0,1,1]],
+            x: [[1,0,0,0,1],[0,1,0,1,0],[0,0,2,0,0],[0,1,0,1,0],[1,0,0,0,1]],
+            plus: [[0,0,1,0,0],[0,0,1,0,0],[1,1,2,1,1],[0,0,1,0,0],[0,0,1,0,0]],
+            checkerboard: [[1,0,1,0,1],[0,1,0,1,0],[1,0,2,0,1],[0,1,0,1,0],[1,0,1,0,1]],
+            smiley: [[0,1,0,1,0],[0,1,0,1,0],[0,0,2,0,0],[1,0,0,0,1],[0,1,1,1,0]],
+            martini: [[1,1,1,1,1],[0,1,1,1,0],[0,0,2,0,0],[0,0,1,0,0],[0,1,1,1,0]],
+            bowtie: [[0,0,0,0,0],[1,1,0,1,1],[1,1,1,1,1],[1,1,0,1,1],[0,0,0,0,0]]
         };
 
+        // Logo data structure
+        let logoData = {
+            left: { light: null, dark: null },
+            right: { light: null, dark: null }
+        };
+
+        // Dark mode functions
         function toggleDarkMode() {
             const body = document.body;
             const btn = document.getElementById('modeToggle');
             
             if (body.classList.contains('dark-mode')) {
-                // Switch to light
                 body.classList.remove('dark-mode');
                 body.classList.add('light-mode');
                 btn.textContent = '🌙 Dark Mode';
-                localStorage.setItem('bingoDarkMode', 'false');
+                localStorage.setItem(STORAGE_KEYS.DARK_MODE, 'false');
             } else {
-                // Switch to dark
                 body.classList.remove('light-mode');
                 body.classList.add('dark-mode');
                 btn.textContent = '☀️ Light Mode';
-                localStorage.setItem('bingoDarkMode', 'true');
+                localStorage.setItem(STORAGE_KEYS.DARK_MODE, 'true');
             }
         }
 
         function loadDarkMode() {
-            const saved = localStorage.getItem('bingoDarkMode');
+            const saved = localStorage.getItem(STORAGE_KEYS.DARK_MODE);
             const body = document.body;
             const btn = document.getElementById('modeToggle');
             
-            // Default to dark mode
             if (saved === null || saved === 'true') {
                 body.classList.add('dark-mode');
                 btn.textContent = '☀️ Light Mode';
@@ -1279,55 +1291,53 @@
             }
         }
 
-        let logoData = {
-            left: { light: null, dark: null },
-            right: { light: null, dark: null }
-        };
-
+        // Logo functions
         function previewLogo(position, mode) {
-            const input = document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput');
-            const preview = document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview');
+            const inputId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput';
+            const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
             
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     logoData[position][mode] = e.target.result;
-                    preview.innerHTML = `<img src="${e.target.result}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
+                    preview.innerHTML = `<img src="${e.target.result}" alt="${position} ${mode} logo">`;
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         function clearLogo(position, mode) {
+            const inputId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput';
+            const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
             logoData[position][mode] = null;
-            document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput').value = '';
-            document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview').innerHTML = '<span style="color: #999; font-size: 12px;">No logo</span>';
+            document.getElementById(inputId).value = '';
+            document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
         }
 
         function loadLogos() {
-            const saved = localStorage.getItem('bingoLogos');
+            const saved = localStorage.getItem(STORAGE_KEYS.LOGOS);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // Merge with default structure
                 logoData = {
                     left: { light: null, dark: null, ...parsed.left },
                     right: { light: null, dark: null, ...parsed.right }
                 };
                 
-                // Update all previews
                 ['left', 'right'].forEach(position => {
                     ['light', 'dark'].forEach(mode => {
                         const logo = logoData[position][mode];
                         const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
                         if (logo) {
-                            document.getElementById(previewId).innerHTML = 
-                                `<img src="${logo}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
+                            document.getElementById(previewId).innerHTML = `<img src="${logo}" alt="${position} ${mode} logo">`;
                         }
                     });
                 });
             }
         }
 
+        // Export/Import functions
         function exportData() {
             const exportObj = {
                 gameState: {
@@ -1376,7 +1386,6 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
-                    // Validate data
                     if (!data.gameState || !data.settings) {
                         throw new Error('Invalid file format');
                     }
@@ -1395,17 +1404,17 @@
                     // Restore logos if present
                     if (data.logos) {
                         logoData = data.logos;
-                        localStorage.setItem('bingoLogos', JSON.stringify(logoData));
+                        localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
                     }
                     
                     // Restore dark mode if present
                     if (data.darkMode !== undefined) {
-                        localStorage.setItem('bingoDarkMode', data.darkMode ? 'true' : 'false');
+                        localStorage.setItem(STORAGE_KEYS.DARK_MODE, data.darkMode ? 'true' : 'false');
                     }
                     
                     // Save everything to localStorage
                     saveGameState();
-                    localStorage.setItem('bingoSettings', JSON.stringify({
+                    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
                         eventName: gameState.eventName,
                         sponsorName: gameState.sponsorName,
                         cardPrefix: gameState.cardPrefix,
@@ -1424,9 +1433,7 @@
             reader.readAsText(file);
         }
 
-        let audioEnabled = true;
-        let selectedVoice = null;
-
+        // Audio functions
         function loadVoices() {
             const voiceSelect = document.getElementById('voiceSelect');
             const voices = window.speechSynthesis.getVoices();
@@ -1441,12 +1448,8 @@
         }
 
         function speakNumber(number) {
-            // Check if audio is enabled at all
             if (!document.getElementById('audioCallEnabled').checked) return;
             
-            // Check if we should speak:
-            // - Always speak if auto-call is running
-            // - OR if manual speak setting is enabled
             const autoCallOn = gameState.isAutoCalling;
             const manualSpeakOn = document.getElementById('speakManualCalls').checked;
             
@@ -1456,15 +1459,13 @@
             const text = `${letter}... ${number}`;
             
             const utterance = new SpeechSynthesisUtterance(text);
-            
-            // Set selected voice if available
             const voices = window.speechSynthesis.getVoices();
             const voiceIndex = document.getElementById('voiceSelect').value;
+            
             if (voiceIndex && voices[voiceIndex]) {
                 utterance.voice = voices[voiceIndex];
             }
             
-            // Adjust speech properties for clarity
             utterance.rate = 0.9;
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
@@ -1473,108 +1474,60 @@
         }
 
         function loadAudioSettings() {
-            const saved = localStorage.getItem('bingoAudioSettings');
+            const saved = localStorage.getItem(STORAGE_KEYS.AUDIO);
             if (saved) {
                 const settings = JSON.parse(saved);
                 document.getElementById('audioCallEnabled').checked = settings.enabled !== false;
                 document.getElementById('voiceSelect').value = settings.voiceIndex || '';
-                document.getElementById('speakManualCalls').checked = settings.speakManualCalls || false;  // Default OFF
+                document.getElementById('speakManualCalls').checked = settings.speakManualCalls || false;
             } else {
-                // First time - set defaults
-                document.getElementById('audioCallEnabled').checked = true;  // Audio system on
-                document.getElementById('speakManualCalls').checked = false;  // But manual calls silent
+                document.getElementById('audioCallEnabled').checked = true;
+                document.getElementById('speakManualCalls').checked = false;
             }
         }
 
+        // Calling mode functions
         function toggleCallingMode() {
             const mode = document.getElementById('callingMode').value;
-            const autoControls = document.querySelector('.controls');
+            const callNextBtn = document.getElementById('callNextBtn');
+            const autoBtn = document.getElementById('autoBtn');
             const manualSection = document.getElementById('manualEntrySection');
             const callerBoard = document.getElementById('callerBoard');
             
             if (mode === 'manual') {
-                autoControls.style.display = 'none';
+                callNextBtn.style.display = 'none';
+                autoBtn.style.display = 'none';
+                rstBtn.style.display = 'none';
                 manualSection.style.display = 'block';
                 callerBoard.classList.add('manual-mode');
-                // Stop auto call if running
                 if (gameState.isAutoCalling) {
                     toggleAutoCall();
                 }
             } else {
-                autoControls.style.display = 'block';
+                callNextBtn.style.display = 'inline-block';
+                autoBtn.style.display = 'inline-block';
+                rstBtn.style.display = 'inline-block';
                 manualSection.style.display = 'none';
                 callerBoard.classList.remove('manual-mode');
             }
             
-            localStorage.setItem('bingoCallingMode', mode);
-        }
-
-        function enterManualNumber() {
-            const letter = document.getElementById('manualLetter').value;
-            const numberInput = document.getElementById('manualNumber');
-            const number = parseInt(numberInput.value);
-            const errorDiv = document.getElementById('manualError');
-            
-            errorDiv.textContent = '';
-            
-            // Validate number
-            if (!number || number < 1 || number > 75) {
-                errorDiv.textContent = 'Please enter a number between 1 and 75';
-                return;
-            }
-            
-            // Validate letter matches number
-            const expectedLetter = getBingoLetter(number);
-            if (letter !== expectedLetter) {
-                errorDiv.textContent = `${number} belongs to column ${expectedLetter}, not ${letter}`;
-                return;
-            }
-            
-            // Check if already called
-            if (gameState.calledNumbers.includes(number)) {
-                errorDiv.textContent = `Number ${letter}-${number} has already been called!`;
-                return;
-            }
-            
-            // Add to called numbers
-            gameState.calledNumbers.push(number);
-            
-            // Remove from available if it was there
-            const idx = gameState.availableNumbers.indexOf(number);
-            if (idx > -1) {
-                gameState.availableNumbers.splice(idx, 1);
-            }
-            
-            // Speak the number if audio enabled
-            speakNumber(number);
-            
-            // Update displays
-            saveGameState();
-            updateDisplay(number);
-            updateStats();
-            updateBoards(number);
-            
-            // Clear input
-            numberInput.value = '';
-            numberInput.focus();
+            localStorage.setItem(STORAGE_KEYS.CALLING_MODE, mode);
         }
 
         function loadCallingMode() {
-            const saved = localStorage.getItem('bingoCallingMode');
+            const saved = localStorage.getItem(STORAGE_KEYS.CALLING_MODE);
             if (saved) {
                 document.getElementById('callingMode').value = saved;
                 toggleCallingMode();
             }
         }
 
-        function clickNumber(number) {
+        function handleManualNumberClick(number) {
             const errorDiv = document.getElementById('manualError');
             errorDiv.textContent = '';
             
-            // Check if already called
             if (gameState.calledNumbers.includes(number)) {
                 errorDiv.textContent = `Number ${getBingoLetter(number)}-${number} has already been called!`;
-                // Flash the cell to show it's already called
                 const cell = document.getElementById('callerBoard-num-' + number);
                 if (cell) {
                     cell.style.animation = 'none';
@@ -1585,25 +1538,19 @@
                 return;
             }
             
-            // Add to called numbers
             gameState.calledNumbers.push(number);
             
-            // Remove from available if it was there
             const idx = gameState.availableNumbers.indexOf(number);
             if (idx > -1) {
                 gameState.availableNumbers.splice(idx, 1);
             }
             
-            // Speak the number if audio enabled
             speakNumber(number);
-            
-            // Update displays
             saveGameState();
             updateDisplay(number);
             updateStats();
             updateBoards(number);
             
-            // Visual feedback
             const cell = document.getElementById('callerBoard-num-' + number);
             if (cell) {
                 cell.style.transform = 'scale(1.2)';
@@ -1622,16 +1569,13 @@
                 return;
             }
             
-            // Remove last called number
             const lastNumber = gameState.calledNumbers.pop();
             
-            // Add back to available numbers
             if (!gameState.availableNumbers.includes(lastNumber)) {
                 gameState.availableNumbers.push(lastNumber);
                 gameState.availableNumbers.sort((a, b) => a - b);
             }
             
-            // Remove "called" styling
             ['callerBoard', 'playerBoard'].forEach(boardId => {
                 const cell = document.getElementById(boardId + '-num-' + lastNumber);
                 if (cell) {
@@ -1639,10 +1583,8 @@
                 }
             });
             
-            // Update displays
             saveGameState();
             
-            // Update current number display to previous or reset
             const newLast = gameState.calledNumbers[gameState.calledNumbers.length - 1];
             if (newLast) {
                 updateDisplay(newLast);
@@ -1653,7 +1595,6 @@
             
             updateStats();
             
-            // Show confirmation
             errorDiv.style.color = '#4caf50';
             errorDiv.textContent = `Removed ${getBingoLetter(lastNumber)}-${lastNumber}`;
             setTimeout(() => {
@@ -1662,30 +1603,7 @@
             }, 2000);
         }
 
-        function toggleCallingMode() {
-            const mode = document.getElementById('callingMode').value;
-            const autoControls = document.querySelector('.controls');
-            const manualSection = document.getElementById('manualEntrySection');
-            const callerBoard = document.getElementById('callerBoard');
-            
-            if (mode === 'manual') {
-                autoControls.style.display = 'none';
-                manualSection.style.display = 'block';
-                callerBoard.style.cursor = 'pointer';
-                // Stop auto call if running
-                if (gameState.isAutoCalling) {
-                    toggleAutoCall();
-                }
-            } else {
-                autoControls.style.display = 'block';
-                manualSection.style.display = 'none';
-                callerBoard.style.cursor = 'default';
-            }
-            
-            // Save preference
-            localStorage.setItem('bingoCallingMode', mode);
-        }
-
+        // Initialization
         function init() { 
             loadDarkMode();
             loadGameState(); 
@@ -1694,10 +1612,9 @@
             loadAudioSettings();
             loadCallingMode();
     
-            // Load voices when available
             if (window.speechSynthesis) {
                 window.speechSynthesis.onvoiceschanged = loadVoices;
-                loadVoices(); // Try immediately in case already loaded
+                loadVoices();
             }
 
             createBoards();
@@ -1708,7 +1625,7 @@
         }
         
         function loadGameState() {
-            const saved = localStorage.getItem('bingoGameState');
+            const saved = localStorage.getItem(STORAGE_KEYS.GAME_STATE);
             if (saved) {
                 const parsed = JSON.parse(saved);
                 gameState.calledNumbers = parsed.calledNumbers || [];
@@ -1720,7 +1637,7 @@
         }
         
         function loadSettings() {
-            const saved = localStorage.getItem('bingoSettings');
+            const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
             if (saved) {
                 const settings = JSON.parse(saved);
                 gameState.eventName = settings.eventName || 'Charity Bingo Night';
@@ -1741,23 +1658,20 @@
             gameState.cardPrefix = document.getElementById('cardPrefixInput').value || 'A-';
             gameState.autoCallSeconds = parseInt(document.getElementById('autoCallInterval').value) || 5;
             
-            localStorage.setItem('bingoSettings', JSON.stringify({
+            localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
                 eventName: gameState.eventName,
                 sponsorName: gameState.sponsorName,
                 cardPrefix: gameState.cardPrefix,
                 autoCallSeconds: gameState.autoCallSeconds
             }));
 
-            // Save audio settings
-            // Save audio settings
-            localStorage.setItem('bingoAudioSettings', JSON.stringify({
+            localStorage.setItem(STORAGE_KEYS.AUDIO, JSON.stringify({
                 enabled: document.getElementById('audioCallEnabled').checked,
                 voiceIndex: document.getElementById('voiceSelect').value,
-                speakManualCalls: document.getElementById('speakManualCalls').checked  // Add this
+                speakManualCalls: document.getElementById('speakManualCalls').checked
             }));
             
-            // Save logos separately
-            localStorage.setItem('bingoLogos', JSON.stringify(logoData));
+            localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
             
             updateDisplaySettings();
             alert('Settings saved!');
@@ -1777,9 +1691,7 @@
             const list = document.getElementById('cardList');
             list.innerHTML = '';
             
-            // Sort numerically by extracting the number from card ID
             const sortedCards = Object.keys(gameState.cards).sort((a, b) => {
-                // Extract numeric part (everything after the prefix)
                 const numA = parseInt(a.replace(gameState.cardPrefix, ''));
                 const numB = parseInt(b.replace(gameState.cardPrefix, ''));
                 return numA - numB;
@@ -1830,13 +1742,10 @@
                 }
             });
             
-            // Clear selection after reprint
             clearCardSelection();
             
-            // Trigger print
             setTimeout(() => {
                 window.print();
-                // Restore all cards view
                 setTimeout(() => {
                     container.innerHTML = '';
                     Object.values(gameState.cards).forEach(card => {
@@ -1847,7 +1756,7 @@
         }
         
         function saveGameState() {
-            localStorage.setItem('bingoGameState', JSON.stringify({ 
+            localStorage.setItem(STORAGE_KEYS.GAME_STATE, JSON.stringify({ 
                 calledNumbers: gameState.calledNumbers, 
                 cards: gameState.cards,
                 currentPattern: gameState.currentPattern
@@ -1856,7 +1765,7 @@
         
         function resetAvailableNumbers() {
             gameState.availableNumbers = [];
-            for (let i = 1; i <= 75; i++) {
+            for (let i = 1; i <= MAX_NUMBER; i++) {
                 if (!gameState.calledNumbers.includes(i)) gameState.availableNumbers.push(i);
             }
         }
@@ -1869,31 +1778,27 @@
         function createBoard(boardId) {
             const board = document.getElementById(boardId);
             board.innerHTML = '';
-            const letters = ['B', 'I', 'N', 'G', 'O'];
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             
             // Create 5 rows (one per letter) with 16 columns (letter + 15 numbers)
-            for (let row = 0; row < 5; row++) {
+            for (let row = 0; row < BINGO_SIZE; row++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'bingo-row';
                 
-                // Letter cell first
                 const letterCell = document.createElement('div');
                 letterCell.className = 'bingo-board-cell letter';
-                letterCell.textContent = letters[row];
+                letterCell.textContent = ['B', 'I', 'N', 'G', 'O'][row];
                 rowDiv.appendChild(letterCell);
                 
-                // Then 15 number cells for this letter's range
                 for (let num = ranges[row][0]; num <= ranges[row][1]; num++) {
                     const cell = document.createElement('div');
                     cell.className = 'bingo-board-cell';
                     cell.id = boardId + '-num-' + num;
                     cell.textContent = num;
                     
-                    // Add click handler for manual mode
                     cell.addEventListener('click', function() {
                         if (document.getElementById('callingMode').value === 'manual') {
-                            clickNumber(num);
+                            handleManualNumberClick(num);
                         }
                     });
                     
@@ -1902,7 +1807,7 @@
                 
                 board.appendChild(rowDiv);
             }
-}
+        }
         
         function updatePattern() {
             gameState.currentPattern = document.getElementById('winningPattern').value;
@@ -1922,8 +1827,8 @@
             grid.innerHTML = '';
             const pattern = patterns[patternKey];
             
-            for (let row = 0; row < 5; row++) {
-                for (let col = 0; col < 5; col++) {
+            for (let row = 0; row < BINGO_SIZE; row++) {
+                for (let col = 0; col < BINGO_SIZE; col++) {
                     const cell = document.createElement('div');
                     cell.className = 'pattern-cell';
                     if (pattern[row][col] === 1) {
@@ -1955,10 +1860,8 @@
         }
         
         function showPanel(panelId) {
-            // If clicking player view, open window immediately and don't switch tab
             if (panelId === 'player') {
                 openPlayerWindow();
-                // Don't activate the player tab - stay on current tab
                 return;
             }
             
@@ -1993,7 +1896,14 @@
         }
         
         function createCard(cardId) {
-            const card = { id: cardId, B: generateColumn(1, 15, 5), I: generateColumn(16, 30, 5), N: generateColumn(31, 45, 5), G: generateColumn(46, 60, 5), O: generateColumn(61, 75, 5) };
+            const card = { 
+                id: cardId, 
+                B: generateColumn(1, 15, 5), 
+                I: generateColumn(16, 30, 5), 
+                N: generateColumn(31, 45, 5), 
+                G: generateColumn(46, 60, 5), 
+                O: generateColumn(61, 75, 5) 
+            };
             card.N[2] = 'FREE';
             return card;
         }
@@ -2016,12 +1926,10 @@
             const eventName = gameState.eventName || 'BINGO';
             const sponsorName = gameState.sponsorName || '';
             
-            // Get current theme logos
             const isDarkMode = document.body.classList.contains('dark-mode');
             const leftLogo = isDarkMode ? logoData.left.dark : logoData.left.light;
             const rightLogo = isDarkMode ? logoData.right.dark : logoData.right.light;
             
-            // Build logo HTML
             let logosHtml = '';
             if (leftLogo || rightLogo) {
                 logosHtml = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 60px;">`;
@@ -2030,16 +1938,14 @@
                 logosHtml += `</div>`;
             }
             
-            // Header row - plain letters, no squares
             let gridHtml = '';
-            gridHtml += `<div class="bingo-header">B</div>`;
-            gridHtml += `<div class="bingo-header">I</div>`;
-            gridHtml += `<div class="bingo-header">N</div>`;
-            gridHtml += `<div class="bingo-header">G</div>`;
-            gridHtml += `<div class="bingo-header">O</div>`;
+            gridHtml += '<div class="bingo-header">B</div>';
+            gridHtml += '<div class="bingo-header">I</div>';
+            gridHtml += '<div class="bingo-header">N</div>';
+            gridHtml += '<div class="bingo-header">G</div>';
+            gridHtml += '<div class="bingo-header">O</div>';
             
-            // Number rows (no header class)
-            for (let row = 0; row < 5; row++) {
+            for (let row = 0; row < BINGO_SIZE; row++) {
                 gridHtml += `<div class="bingo-cell">${card.B[row]}</div>`;
                 gridHtml += `<div class="bingo-cell">${card.I[row]}</div>`;
                 gridHtml += `<div class="bingo-cell ${card.N[row] === 'FREE' ? 'free' : ''}">${card.N[row]}</div>`;
@@ -2060,7 +1966,6 @@
         }
         
         function printCards() { 
-            // Show all cards for printing
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
             Object.values(gameState.cards).forEach(card => {
@@ -2081,7 +1986,6 @@
             const number = gameState.availableNumbers.splice(idx, 1)[0];
             gameState.calledNumbers.push(number);
             
-            // Speak the number
             speakNumber(number);
             
             saveGameState();
@@ -2095,12 +1999,6 @@
             const display = letter + '-' + number;
             document.getElementById('currentNumber').textContent = display;
             document.getElementById('playerCurrentNumber').textContent = display;
-        }
-        
-        function updatePlayerView() {
-            const current = gameState.calledNumbers[gameState.calledNumbers.length - 1];
-            const letter = current ? getBingoLetter(current) + '-' + current : '--';
-            document.getElementById('playerCurrentNumber').textContent = letter;
         }
         
         function getBingoLetter(num) {
@@ -2162,9 +2060,14 @@
             }
         }
         
+        /**
+         * Checks if a card matches the winning pattern
+         * @param {Object} card - The bingo card to check
+         * @param {string} patternKey - The pattern to check against
+         * @returns {boolean} - True if the card wins
+         */
         function checkWinPattern(card, patternKey) {
             const marked = createMarkedGrid(card);
-            const pattern = patterns[patternKey];
             
             switch(patternKey) {
                 case 'normal':
@@ -2189,19 +2092,7 @@
                     }
                     return true;
                 case 'windmill':
-                    const windmillMatch = [
-                        [1,1,0,1,1],
-                        [1,1,0,1,1],
-                        [0,0,2,0,0],
-                        [1,1,0,1,1],
-                        [1,1,0,1,1]
-                    ];
-                    for (let row = 0; row < 5; row++) {
-                        for (let col = 0; col < 5; col++) {
-                            if (windmillMatch[row][col] === 1 && !marked[row][col]) return false;
-                        }
-                    }
-                    return true;
+                    return matchesPatternMatrix(marked, patterns.windmill);
                 case 'x':
                     return checkXPattern(marked);
                 case 'plus':
@@ -2218,69 +2109,57 @@
                     }
                     return marked[2][2];
                 case 'smiley':
-                    const smileyMatch = [
-                        [0,1,0,1,0],
-                        [0,1,0,1,0],
-                        [0,0,2,0,0],
-                        [1,0,0,0,1],
-                        [0,1,1,1,0]
-                    ];
-                    for (let row = 0; row < 5; row++) {
-                        for (let col = 0; col < 5; col++) {
-                            if (smileyMatch[row][col] === 1 && !marked[row][col]) return false;
-                        }
-                    }
-                    return true;
+                    return matchesPatternMatrix(marked, patterns.smiley);
                 case 'martini':
-                    const martiniMatch = [
-                        [1,1,1,1,1],
-                        [0,1,1,1,0],
-                        [0,0,2,0,0],
-                        [0,0,1,0,0],
-                        [0,1,1,1,0]
-                    ];
-                    for (let row = 0; row < 5; row++) {
-                        for (let col = 0; col < 5; col++) {
-                            if (martiniMatch[row][col] === 1 && !marked[row][col]) return false;
-                        }
-                    }
-                    return true;
+                    return matchesPatternMatrix(marked, patterns.martini);
                 case 'bowtie':
-                    const bowtieMatch = [
-                        [0,0,0,0,0],
-                        [1,1,0,1,1],
-                        [1,1,1,1,1],
-                        [1,1,0,1,1],
-                        [0,0,0,0,0]
-                    ];
-                    for (let row = 0; row < 5; row++) {
-                        for (let col = 0; col < 5; col++) {
-                            if (bowtieMatch[row][col] === 1 && !marked[row][col]) return false;
-                        }
-                    }
-                    return true;
+                    return matchesPatternMatrix(marked, patterns.bowtie);
                 default:
                     return checkHorizontal(marked);
             }
         }
         
+        /**
+         * Helper function to check if marked cells match a pattern matrix
+         */
+        function matchesPatternMatrix(marked, patternMatrix) {
+            for (let row = 0; row < BINGO_SIZE; row++) {
+                for (let col = 0; col < BINGO_SIZE; col++) {
+                    if (patternMatrix[row][col] === 1 && !marked[row][col]) return false;
+                }
+            }
+            return true;
+        }
+        
         function createMarkedGrid(card) {
             const grid = [];
-            for (let row = 0; row < 5; row++) {
-                grid[row] = [isCalled(card.B[row]), isCalled(card.I[row]), isCalled(card.N[row]), isCalled(card.G[row]), isCalled(card.O[row])];
+            for (let row = 0; row < BINGO_SIZE; row++) {
+                grid[row] = [
+                    isCalled(card.B[row]), 
+                    isCalled(card.I[row]), 
+                    isCalled(card.N[row]), 
+                    isCalled(card.G[row]), 
+                    isCalled(card.O[row])
+                ];
             }
             return grid;
         }
         
-        function isCalled(num) { return num === 'FREE' || gameState.calledNumbers.includes(num); }
+        function isCalled(num) { 
+            return num === 'FREE' || gameState.calledNumbers.includes(num); 
+        }
         
         function checkHorizontal(marked) {
-            for (let row = 0; row < 5; row++) if (marked[row].every(cell => cell)) return true;
+            for (let row = 0; row < BINGO_SIZE; row++) {
+                if (marked[row].every(cell => cell)) return true;
+            }
             return false;
         }
         
         function checkVertical(marked) {
-            for (let col = 0; col < 5; col++) if (marked.every(row => row[col])) return true;
+            for (let col = 0; col < BINGO_SIZE; col++) {
+                if (marked.every(row => row[col])) return true;
+            }
             return false;
         }
         
@@ -2291,7 +2170,11 @@
         }
         
         function checkFullHouse(marked) {
-            for (let row = 0; row < 5; row++) for (let col = 0; col < 5; col++) if (!marked[row][col]) return false;
+            for (let row = 0; row < BINGO_SIZE; row++) {
+                for (let col = 0; col < BINGO_SIZE; col++) {
+                    if (!marked[row][col]) return false;
+                }
+            }
             return true;
         }
         
@@ -2323,198 +2206,225 @@
                 patternHtml += '<br>';
             }
             
+            const leftLogo = logoData.left[isDarkMode ? 'dark' : 'light'];
+            const rightLogo = logoData.right[isDarkMode ? 'dark' : 'light'];
+            
             const win = window.open('', 'PlayerView', 'width=1024,height=768');
             win.document.write(`<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Bingo Master - Player View</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { 
-                    font-family: Arial, sans-serif; 
-                    text-align: center; 
-                    padding: 30px;
-                    background: ${bgColor};
-                    color: ${textColor};
-                    min-height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: flex-start;
+<html>
+<head>
+    <title>Bingo Master - Player View</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 30px;
+            background: ${bgColor};
+            color: ${textColor};
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            font-size: 16px;
+            background: ${isDarkMode ? '#64b5f6' : '#1a237e'};
+            color: ${isDarkMode ? '#1a1a2e' : 'white'};
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .event { 
+            font-size: 72px; 
+            font-weight: bold; 
+            color: ${textColor}; 
+            margin-bottom: 10px; 
+        }
+        .sponsor { 
+            font-size: 36px; 
+            color: ${isDarkMode ? '#aaa' : '#666'}; 
+            margin-bottom: 20px; 
+        }
+        .pattern { 
+            font-size: 28px; 
+            color: ${textColor}; 
+            margin-bottom: 15px; 
+        }
+        .pattern-grid { 
+            display: inline-block; 
+            margin: 10px; 
+            padding: 15px; 
+            background: ${boardBg}; 
+            border-radius: 8px; 
+            border: 2px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
+        }
+        .current { 
+            font-size: 200px; 
+            font-weight: bold; 
+            color: ${textColor}; 
+            margin: 30px 0; 
+            line-height: 1; 
+        }
+        .board { 
+            display: grid;
+            grid-template-columns: 70px repeat(15, 52px);
+            gap: 3px;
+            border: 3px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: ${boardBg};
+            margin: 0 auto;
+        }
+        .bingo-cell { 
+            height: 52px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 22px; 
+            font-weight: bold;
+            border: 1px solid ${isDarkMode ? '#0f3460' : '#ddd'}; 
+            background: ${cellBg};
+            color: ${cellColor};
+        }
+        .bingo-cell.letter { 
+            background: ${letterBg}; 
+            color: ${letterColor}; 
+            font-size: 32px; 
+            font-weight: bold;
+        }
+        .bingo-cell.called { 
+            background: #4caf50; 
+            color: white; 
+        }
+        .bingo-cell.last-called { 
+            background: #ffeb3b; 
+            color: #1a237e; 
+            border: 3px solid #ff5722; 
+        }
+    </style>
+</head>
+<body>
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
+        ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+        <div>
+            <div class="event">${gameState.eventName}</div>
+            <div class="sponsor">${gameState.sponsorName}</div>
+        </div>
+        ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+    </div>
+    <div class="pattern">Pattern: ${patternNames[gameState.currentPattern]}</div>
+    <div class="pattern-grid">${patternHtml}</div>
+    <div class="current" id="pcur">--</div>
+    <div class="board" id="pboard"></div>
+    <script>
+        function createBoard() {
+            const b = document.getElementById('pboard');
+            const letters = ['B','I','N','G','O'];
+            const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+            
+            for(let row=0; row<5; row++) {
+                const lc = document.createElement('div');
+                lc.className = 'bingo-cell letter';
+                lc.textContent = letters[row];
+                b.appendChild(lc);
+                
+                for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
+                    const c = document.createElement('div');
+                    c.id = 'p-'+n;
+                    c.className = 'bingo-cell';
+                    c.textContent = n;
+                    b.appendChild(c);
                 }
-                .fullscreen-btn {
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    padding: 15px 30px;
-                    font-size: 16px;
-                    background: ${isDarkMode ? '#64b5f6' : '#1a237e'};
-                    color: ${isDarkMode ? '#1a1a2e' : 'white'};
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                    z-index: 1000;
+            }
+        }
+        function update() {
+            const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
+            const c = d.calledNumbers[d.calledNumbers.length-1];
+            const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
+            document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
+            d.calledNumbers.forEach(n => {
+                const cell = document.getElementById('p-'+n);
+                if(cell) cell.classList.add('called');
+            });
+            const last = d.calledNumbers[d.calledNumbers.length-1];
+            if(last) {
+                const lastCell = document.getElementById('p-'+last);
+                if(lastCell) {
+                    lastCell.classList.add('last-called');
                 }
-                .event { 
-                    font-size: 72px; 
-                    font-weight: bold; 
-                    color: ${textColor}; 
-                    margin-bottom: 10px; 
-                }
-                .sponsor { 
-                    font-size: 36px; 
-                    color: ${isDarkMode ? '#aaa' : '#666'}; 
-                    margin-bottom: 20px; 
-                }
-                .pattern { 
-                    font-size: 28px; 
-                    color: ${textColor}; 
-                    margin-bottom: 15px; 
-                }
-                .pattern-grid { 
-                    display: inline-block; 
-                    margin: 10px; 
-                    padding: 15px; 
-                    background: ${boardBg}; 
-                    border-radius: 8px; 
-                    border: 2px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
-                }
-                .current { 
-                    font-size: 200px; 
-                    font-weight: bold; 
-                    color: ${textColor}; 
-                    margin: 30px 0; 
-                    line-height: 1; 
-                }
-                .board { 
-                    display: grid;
-                    grid-template-columns: 70px repeat(15, 52px);
-                    gap: 3px;
-                    border: 3px solid ${isDarkMode ? '#64b5f6' : '#1a237e'}; 
-                    border-radius: 8px; 
-                    overflow: hidden; 
-                    background: ${boardBg};
-                    margin: 0 auto;
-                }
-                .bingo-cell { 
-                    height: 52px;
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center; 
-                    font-size: 22px; 
-                    font-weight: bold;
-                    border: 1px solid ${isDarkMode ? '#0f3460' : '#ddd'}; 
-                    background: ${cellBg};
-                    color: ${cellColor};
-                }
-                .bingo-cell.letter { 
-                    background: ${letterBg}; 
-                    color: ${letterColor}; 
-                    font-size: 32px; 
-                    font-weight: bold;
-                }
-                .bingo-cell.called { 
-                    background: #4caf50; 
-                    color: white; 
-                }
-                .bingo-cell.last-called { 
-                    background: #ffeb3b; 
-                    color: #1a237e; 
-                    border: 3px solid #ff5722; 
-                }
-            </style>
-        </head>
-        <body>
-            <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
-                ${logoData.left[isDarkMode ? 'dark' : 'light'] ? `<img src="${logoData.left[isDarkMode ? 'dark' : 'light']}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-                <div>
-                    <div class="event">${gameState.eventName}</div>
-                    <div class="sponsor">${gameState.sponsorName}</div>
-                </div>
-                ${logoData.right[isDarkMode ? 'dark' : 'light'] ? `<img src="${logoData.right[isDarkMode ? 'dark' : 'light']}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-            </div>
-            <div class="pattern">Pattern: ${patternNames[gameState.currentPattern]}</div>
-            <div class="pattern-grid">${patternHtml}</div>
-            <div class="current" id="pcur">--</div>
-            <div class="board" id="pboard"></div>
-            <script>
-                function createBoard() {
-                    const b = document.getElementById('pboard');
-                    const letters = ['B','I','N','G','O'];
-                    const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
-                    
-                    for(let row=0; row<5; row++) {
-                        // Letter cell
-                        const lc = document.createElement('div');
-                        lc.className = 'bingo-cell letter';
-                        lc.textContent = letters[row];
-                        b.appendChild(lc);
-                        
-                        // Number cells
-                        for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
-                            const c = document.createElement('div');
-                            c.id = 'p-'+n;
-                            c.className = 'bingo-cell';
-                            c.textContent = n;
-                            b.appendChild(c);
-                        }
-                    }
-                }
-                function update() {
-                    const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
-                    const c = d.calledNumbers[d.calledNumbers.length-1];
-                    const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
-                    document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
-                    d.calledNumbers.forEach(n => {
-                        const cell = document.getElementById('p-'+n);
-                        if(cell) cell.classList.add('called');
-                    });
-                    const last = d.calledNumbers[d.calledNumbers.length-1];
-                    if(last) {
-                        const lastCell = document.getElementById('p-'+last);
-                        if(lastCell) {
-                            lastCell.classList.add('last-called');
-                        }
-                    }
-                }
-                function toggleFS() {
-                    const btn = document.getElementById('fsBtn');
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen();
-                        btn.textContent = '⛶ Exit Full Screen';
-                    } else {
-                        document.exitFullscreen();
-                        btn.textContent = '⛶ Full Screen';
-                    }
-                }
-                document.addEventListener('fullscreenchange', () => {
-                    document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
-                });
-                createBoard();
-                setInterval(update, 1000);
-                update();
-            <\/script>
-        </body>
-        </html>`);
+            }
+        }
+        function toggleFS() {
+            const btn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                btn.textContent = '⛶ Exit Full Screen';
+            } else {
+                document.exitFullscreen();
+                btn.textContent = '⛶ Full Screen';
+            }
+        }
+        document.addEventListener('fullscreenchange', () => {
+            document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
+        });
+        createBoard();
+        setInterval(update, 1000);
+        update();
+    <\/script>
+</body>
+</html>`);
         }
         
         function clearAllData() {
             if (confirm('Clear ALL data? This cannot be undone!')) {
-                localStorage.removeItem('bingoGameState');
-                localStorage.removeItem('bingoSettings');
-                gameState = { calledNumbers: [], availableNumbers: [], cards: {}, autoCallInterval: null, isAutoCalling: false, currentPattern: 'normal', eventName: 'Charity Bingo Night', sponsorName: 'Sponsored by Local Business', cardPrefix: 'A-', autoCallSeconds: 5 };
+                localStorage.removeItem(STORAGE_KEYS.GAME_STATE);
+                localStorage.removeItem(STORAGE_KEYS.SETTINGS);
+                localStorage.removeItem(STORAGE_KEYS.LOGOS);
+                
+                gameState = { 
+                    calledNumbers: [], 
+                    availableNumbers: [], 
+                    cards: {}, 
+                    autoCallInterval: null, 
+                    isAutoCalling: false, 
+                    currentPattern: 'normal', 
+                    eventName: 'Charity Bingo Night', 
+                    sponsorName: 'Sponsored by Local Business', 
+                    cardPrefix: 'A-', 
+                    autoCallSeconds: 5 
+                };
+                
+                logoData = { left: { light: null, dark: null }, right: { light: null, dark: null } };
+                
                 selectedCards.clear();
                 resetAvailableNumbers();
                 createBoards();
                 document.getElementById('cardsContainer').innerHTML = '';
                 updateCardCount();
                 updateCardList();
+                
+                // Clear logo previews
+                ['left', 'right'].forEach(position => {
+                    ['light', 'dark'].forEach(mode => {
+                        const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+                        document.getElementById(previewId).innerHTML = '<span class="placeholder">No logo</span>';
+                    });
+                });
+                
                 alert('All data cleared!');
             }
         }
         
+        // Start the app
         init();
     </script>
 </body>
