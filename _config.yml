@@ -1,4 +1,4 @@
 # _config.yml
 theme: minima
 minima:
-  skin: auto   
+  skin: dark   
