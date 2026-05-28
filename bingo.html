@@ -1283,7 +1283,18 @@
             if (id.includes('-num-')) {
                 return document.getElementById(id);
             }
-            return elements[id] || (elements[id] = document.getElementById(id));
+            
+            // Only return cached if it exists and is not null
+            if (elements[id] && elements[id] !== null) {
+                return elements[id];
+            }
+            
+            // Always fetch fresh and only cache if found
+            const el = document.getElementById(id);
+            if (el) {
+                elements[id] = el;
+            }
+            return el;
         }
 
         // Dark mode functions
@@ -1733,6 +1744,11 @@
         }
         
         function reprintSelected() {
+            if (Object.keys(gameState.cards).length === 0) {
+                alert('No cards to print. Please generate cards first.');
+                return;
+            }
+
             if (selectedCards.size === 0) {
                 alert('Please select at least one card to reprint');
                 return;
@@ -1773,12 +1789,36 @@
         }
         
         function createBoards() {
-            createBoard('callerBoard');
-            createBoard('playerBoard');
+            // Only create boards if elements exist
+            const callerBoard = document.getElementById('callerBoard');
+            const playerBoard = document.getElementById('playerBoard');
+            
+            if (callerBoard) {
+                createBoard('callerBoard');
+            } else {
+                console.warn('callerBoard not found, will retry later');
+                // Retry after a short delay
+                setTimeout(() => {
+                    if (document.getElementById('callerBoard')) {
+                        createBoard('callerBoard');
+                    }
+                }, 100);
+            }
+            
+            // Player board is optional (mainly used for player view window now)
+            if (playerBoard) {
+                createBoard('playerBoard');
+            }
+            // Don't warn if playerBoard doesn't exist - it's not critical
         }
         
         function createBoard(boardId) {
-            const board = getEl(boardId);
+            const board = document.getElementById(boardId);  // Don't use getEl here
+            if (!board) {
+                console.error('Board element not found:', boardId);
+                return;
+            }
+            
             board.innerHTML = '';
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             const letters = ['B', 'I', 'N', 'G', 'O'];
@@ -1801,10 +1841,10 @@
                     // Direct onclick for manual mode
                     if (boardId === 'callerBoard') {
                         cell.onclick = function(e) {
-                            if (getEl('callingMode').value !== 'manual') return;
+                            if (document.getElementById('callingMode').value !== 'manual') return;
                             if (gameState.calledNumbers.includes(num)) {
-                                getEl('manualError').textContent = `Number ${getBingoLetter(num)}-${num} has already been called!`;
-                                setTimeout(() => getEl('manualError').textContent = '', 2000);
+                                document.getElementById('manualError').textContent = `Number ${getBingoLetter(num)}-${num} has already been called!`;
+                                setTimeout(() => document.getElementById('manualError').textContent = '', 2000);
                                 return;
                             }
                             handleManualNumberClick(num);
@@ -1819,13 +1859,22 @@
         }
 
         function updatePattern() {
-            gameState.currentPattern = getEl('winningPattern').value;
-            const patternName = patternNames[gameState.currentPattern];
+            // Get value from select, fallback to gameState, fallback to 'normal'
+            const selectValue = getEl('winningPattern').value;
+            gameState.currentPattern = selectValue || gameState.currentPattern || 'normal';
             
+            // Ensure the select element shows the correct value
+            getEl('winningPattern').value = gameState.currentPattern;
+            
+            const patternName = patternNames[gameState.currentPattern] || patternNames.normal;
+            
+            // Update all pattern name displays
             ['patternName', 'verifyPatternName', 'playerPatternName'].forEach(id => {
-                getEl(id).textContent = `Pattern: ${patternName}`;
+                const el = getEl(id);
+                if (el) el.textContent = `Pattern: ${patternName}`;
             });
             
+            // Render all pattern grids
             ['callerPatternGrid', 'verifyPatternGrid', 'playerPatternGrid'].forEach(id => {
                 renderPatternGrid(id, gameState.currentPattern);
             });
@@ -1837,7 +1886,15 @@
             const grid = getEl(gridId);
             const pattern = patterns[patternKey];
             
-            grid.innerHTML = pattern.flat().map(cell => {
+            // Safety check - if pattern doesn't exist, use normal
+            if (!pattern) {
+                console.warn('Pattern not found:', patternKey, '- using normal');
+                patternKey = 'normal';
+            }
+            
+            const patternData = patterns[patternKey];
+            
+            grid.innerHTML = patternData.flat().map(cell => {
                 const className = cell === P.REQUIRED ? 'required' : cell === P.FREE ? 'free' : '';
                 return `<div class="pattern-cell ${className}"></div>`;
             }).join('');
@@ -1971,13 +2028,18 @@
         }
         
         function printCards() { 
+            if (Object.keys(gameState.cards).length === 0) {
+                alert('No cards to print. Please generate cards first.');
+                return;
+            }
+            
             const container = getEl('cardsContainer');
             container.innerHTML = '';
             Object.values(gameState.cards).forEach(card => container.appendChild(renderCard(card)));
             
             setTimeout(() => window.print(), CONFIG.PRINT_DELAY);
         }
-        
+
         function callNextNumber() {
             if (gameState.availableNumbers.length === 0) { 
                 alert('All numbers called!'); 
