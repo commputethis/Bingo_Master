@@ -182,10 +182,6 @@
             color: #aaa;
         }
 
-        body.dark-mode .player-current {
-            color: var(--primary-light);
-        }
-
         body.dark-mode #callerBoard.manual-mode .bingo-board-cell:not(.letter):hover {
             background: var(--dark-input);
             border-color: var(--primary-light);
@@ -728,67 +724,6 @@
         .pattern-selector { margin: 20px 0; }
         .pattern-selector label { display: block; margin-bottom: 10px; font-weight: 600; }
         
-        /* Player View Styles - Fixed */
-        .player-view { 
-            text-align: center; 
-            padding: 20px; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            gap: 20px;
-        }
-        .player-view .event-name { 
-            font-size: 4vw; 
-            font-weight: bold; 
-            color: var(--primary-color); 
-            margin-bottom: 0;
-            margin-top: 20px;
-        }
-        .player-view .sponsor-name { 
-            font-size: 2.5vw; 
-            color: #666; 
-            margin-bottom: 0;
-        }
-        .player-view .pattern-name {
-            font-size: 2vw;
-            margin-bottom: 10px;
-        }
-        .player-view .pattern-display-container {
-            margin: 10px auto;
-            padding: 10px;
-        }
-        .player-view .pattern-grid {
-            grid-template-columns: repeat(5, 35px);
-            gap: 3px;
-        }
-        .player-view .pattern-cell {
-            width: 35px;
-            height: 35px;
-        }
-        .player-view .player-current { 
-            font-size: 12vw; 
-            font-weight: bold; 
-            color: var(--primary-color); 
-            margin: 10px 0; 
-            line-height: 1; 
-        }
-        .player-view .bingo-board {
-            margin: 10px auto;
-        }
-        .player-view .bingo-board-cell { 
-            width: 3.5vw; 
-            height: 3.5vw; 
-            font-size: 1.3vw; 
-            min-width: 30px;
-            min-height: 30px;
-        }
-        .player-view .bingo-board-cell.letter { 
-            width: 4vw; 
-            font-size: 2vw; 
-            min-width: 35px;
-        }
-        
         /* Settings Styles */
         .settings-section {
             max-width: 900px;
@@ -1099,27 +1034,22 @@
         </div>
         
         <div id="player" class="panel">
-            <div class="player-view" id="playerViewContainer">
-                <div>
-                    <div class="event-name" id="displayEventName">Charity Bingo Night</div>
-                    <div class="sponsor-name" id="displaySponsorName">Sponsored by Local Business</div>
-                    
-                    <div class="pattern-info">
-                        <div class="pattern-name" id="playerPatternName">Pattern: Normal (Any Line)</div>
-                        <div class="pattern-display-container">
-                            <div class="pattern-display-title">Winning Pattern</div>
-                            <div class="pattern-grid" id="playerPatternGrid"></div>
-                        </div>
+            <div class="text-center mt-30">
+                <div class="event-name" id="displayEventName">Charity Bingo Night</div>
+                <div class="sponsor-name" id="displaySponsorName">Sponsored by Local Business</div>
+                
+                <div class="pattern-info">
+                    <div class="pattern-name" id="playerPatternName">Pattern: Normal (Any Line)</div>
+                    <div class="pattern-display-container">
+                        <div class="pattern-display-title">Winning Pattern</div>
+                        <div class="pattern-grid" id="playerPatternGrid"></div>
                     </div>
                 </div>
                 
                 <div class="player-current" id="playerCurrentNumber">--</div>
                 
-                <div>
-                    <div class="bingo-board player-board" id="playerBoard"></div>
-                    <div class="mt-20">
-                        <button class="secondary" onclick="openPlayerWindow()">Open in New Window</button>
-                    </div>
+                <div class="mt-20">
+                    <button class="secondary" onclick="openPlayerWindow()">Open in New Window</button>
                 </div>
             </div>
         </div>
@@ -1269,9 +1199,17 @@
     </div>
 
     <script>
-        // Constants
-        const BINGO_SIZE = 5;
-        const MAX_NUMBER = 75;
+        // Configuration Constants
+        const CONFIG = {
+            BINGO_SIZE: 5,
+            MAX_NUMBER: 75,
+            MAX_CARDS: 5000,
+            DEFAULT_AUTO_CALL_SECONDS: 5,
+            ANIMATION_DURATION: 200,
+            PRINT_DELAY: 500,
+            UPDATE_INTERVAL: 1000
+        };
+
         const STORAGE_KEYS = {
             GAME_STATE: 'bingoGameState',
             SETTINGS: 'bingoSettings',
@@ -1294,11 +1232,12 @@
             eventName: 'Charity Bingo Night',
             sponsorName: 'Sponsored by Local Business',
             cardPrefix: 'A-',
-            autoCallSeconds: 5
+            autoCallSeconds: CONFIG.DEFAULT_AUTO_CALL_SECONDS
         };
 
         let selectedCards = new Set();
         let elements = {};
+        let playerWindow = null;
 
         // Pattern names map
         const patternNames = {
@@ -1316,12 +1255,12 @@
             bowtie: 'Bow Tie'
         };
 
-        // Pattern definitions (5x5 grid, 1 = required, 0 = not required, 2 = free space)
+        // Pattern definitions - FIXED: coverall now creates proper unique arrays
         const patterns = {
             normal: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.FREE,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]],
             corners: [[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED]],
             outside: [[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.FREE,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED]],
-            coverall: Array(5).fill(Array(5).fill(P.REQUIRED)),
+            coverall: Array.from({length: 5}, () => Array(5).fill(P.REQUIRED)),
             inner: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.FREE,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]],
             windmill: [[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED]],
             x: [[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED]],
@@ -1333,13 +1272,17 @@
         };
 
         // Logo data structure
-        let logoData = {
+        const logoData = {
             left: { light: null, dark: null },
             right: { light: null, dark: null }
         };
 
-        // DOM element cache
+        // DOM element cache - FIXED: Don't cache board cells
         function getEl(id) {
+            // Don't cache board cells that get recreated
+            if (id.includes('-num-')) {
+                return document.getElementById(id);
+            }
             return elements[id] || (elements[id] = document.getElementById(id));
         }
 
@@ -1359,6 +1302,10 @@
         }
 
         // Logo functions
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
         function previewLogo(position, mode) {
             const inputId = `${position}${capitalize(mode)}LogoInput`;
             const previewId = `${position}${capitalize(mode)}LogoPreview`;
@@ -1388,10 +1335,8 @@
             if (!saved) return;
             
             const parsed = JSON.parse(saved);
-            logoData = {
-                left: { light: null, dark: null, ...parsed.left },
-                right: { light: null, dark: null, ...parsed.right }
-            };
+            Object.assign(logoData.left, parsed.left);
+            Object.assign(logoData.right, parsed.right);
             
             ['left', 'right'].forEach(pos => {
                 ['light', 'dark'].forEach(mode => {
@@ -1402,10 +1347,6 @@
                     }
                 });
             });
-        }
-
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
         // Export/Import functions
@@ -1474,16 +1415,18 @@
                 throw new Error('Invalid file format');
             }
             
-            gameState.calledNumbers = data.gameState.calledNumbers || [];
-            gameState.cards = data.gameState.cards || {};
-            gameState.currentPattern = data.gameState.currentPattern || 'normal';
-            gameState.eventName = data.settings.eventName || 'Charity Bingo Night';
-            gameState.sponsorName = data.settings.sponsorName || 'Sponsored by Local Business';
-            gameState.cardPrefix = data.settings.cardPrefix || 'A-';
-            gameState.autoCallSeconds = data.settings.autoCallSeconds || 5;
+            Object.assign(gameState, {
+                calledNumbers: data.gameState.calledNumbers || [],
+                cards: data.gameState.cards || {},
+                currentPattern: data.gameState.currentPattern || 'normal',
+                eventName: data.settings.eventName || 'Charity Bingo Night',
+                sponsorName: data.settings.sponsorName || 'Sponsored by Local Business',
+                cardPrefix: data.settings.cardPrefix || 'A-',
+                autoCallSeconds: data.settings.autoCallSeconds || CONFIG.DEFAULT_AUTO_CALL_SECONDS
+            });
             
             if (data.logos) {
-                logoData = data.logos;
+                Object.assign(logoData, data.logos);
                 localStorage.setItem(STORAGE_KEYS.LOGOS, JSON.stringify(logoData));
             }
             
@@ -1573,15 +1516,20 @@
             }
         }
 
+        // FIXED: Proper event delegation for manual mode
+        function handleBoardClick(e) {
+            if (!e.target.classList.contains('bingo-board-cell') || e.target.classList.contains('letter')) return;
+            if (getEl('callingMode').value !== 'manual') return;
+            
+            const num = parseInt(e.target.textContent);
+            if (gameState.calledNumbers.includes(num)) return;
+            
+            handleManualNumberClick(num);
+        }
+
         function handleManualNumberClick(number) {
             const errorDiv = getEl('manualError');
             errorDiv.textContent = '';
-            
-            if (gameState.calledNumbers.includes(number)) {
-                errorDiv.textContent = `Number ${getBingoLetter(number)}-${number} has already been called!`;
-                pulseCell(`callerBoard-num-${number}`);
-                return;
-            }
             
             addCalledNumber(number);
             speakNumber(number);
@@ -1598,20 +1546,11 @@
             if (idx > -1) gameState.availableNumbers.splice(idx, 1);
         }
 
-        function pulseCell(cellId) {
-            const cell = getEl(cellId);
-            if (!cell) return;
-            cell.style.animation = 'none';
-            requestAnimationFrame(() => {
-                cell.style.animation = 'pulse 0.5s ease';
-            });
-        }
-
         function animateCell(cellId) {
             const cell = getEl(cellId);
             if (!cell) return;
             cell.style.transform = 'scale(1.2)';
-            setTimeout(() => cell.style.transform = '', 200);
+            setTimeout(() => cell.style.transform = '', CONFIG.ANIMATION_DURATION);
         }
 
         function undoLastCall() {
@@ -1630,9 +1569,9 @@
                 gameState.availableNumbers.sort((a, b) => a - b);
             }
             
-            ['callerBoard', 'playerBoard'].forEach(boardId => {
-                const cell = getEl(`${boardId}-num-${lastNumber}`);
-                if (cell) cell.classList.remove('called', 'last-called');
+            // Clear from all boards including player window
+            document.querySelectorAll(`[id$="-num-${lastNumber}"]`).forEach(cell => {
+                cell.classList.remove('called', 'last-called');
             });
             
             saveGameState();
@@ -1659,6 +1598,7 @@
             }
 
             createBoards();
+            setupEventListeners();
             updatePattern();
             updateStats();
             updateCardUI();
@@ -1673,9 +1613,11 @@
             const saved = localStorage.getItem(STORAGE_KEYS.GAME_STATE);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                gameState.calledNumbers = parsed.calledNumbers || [];
-                gameState.cards = parsed.cards || {};
-                gameState.currentPattern = parsed.currentPattern || 'normal';
+                Object.assign(gameState, {
+                    calledNumbers: parsed.calledNumbers || [],
+                    cards: parsed.cards || {},
+                    currentPattern: parsed.currentPattern || 'normal'
+                });
             }
             getEl('winningPattern').value = gameState.currentPattern;
             resetAvailableNumbers();
@@ -1685,10 +1627,12 @@
             const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
             if (saved) {
                 const settings = JSON.parse(saved);
-                gameState.eventName = settings.eventName || 'Charity Bingo Night';
-                gameState.sponsorName = settings.sponsorName || 'Sponsored by Local Business';
-                gameState.cardPrefix = settings.cardPrefix || 'A-';
-                gameState.autoCallSeconds = settings.autoCallSeconds || 5;
+                Object.assign(gameState, {
+                    eventName: settings.eventName || 'Charity Bingo Night',
+                    sponsorName: settings.sponsorName || 'Sponsored by Local Business',
+                    cardPrefix: settings.cardPrefix || 'A-',
+                    autoCallSeconds: settings.autoCallSeconds || CONFIG.DEFAULT_AUTO_CALL_SECONDS
+                });
             }
             getEl('eventNameInput').value = gameState.eventName;
             getEl('sponsorNameInput').value = gameState.sponsorName;
@@ -1698,10 +1642,12 @@
         }
         
         function saveSettings() {
-            gameState.eventName = getEl('eventNameInput').value;
-            gameState.sponsorName = getEl('sponsorNameInput').value;
-            gameState.cardPrefix = getEl('cardPrefixInput').value || 'A-';
-            gameState.autoCallSeconds = parseInt(getEl('autoCallInterval').value) || 5;
+            Object.assign(gameState, {
+                eventName: getEl('eventNameInput').value,
+                sponsorName: getEl('sponsorNameInput').value,
+                cardPrefix: getEl('cardPrefixInput').value || 'A-',
+                autoCallSeconds: parseInt(getEl('autoCallInterval').value) || CONFIG.DEFAULT_AUTO_CALL_SECONDS
+            });
             
             localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({
                 eventName: gameState.eventName,
@@ -1739,21 +1685,35 @@
         
         function updateCardList() {
             const list = getEl('cardList');
-            list.innerHTML = '';
+            const cardIds = Object.keys(gameState.cards);
             
-            const sortedCards = Object.keys(gameState.cards).sort((a, b) => {
-                const numA = parseInt(a.replace(gameState.cardPrefix, ''));
-                const numB = parseInt(b.replace(gameState.cardPrefix, ''));
+            if (cardIds.length === 0) {
+                list.innerHTML = '<div class="text-muted" style="padding: 10px;">No cards generated yet</div>';
+                return;
+            }
+            
+            const sortedCards = cardIds.sort((a, b) => {
+                const numA = parseInt(a.replace(gameState.cardPrefix, '')) || 0;
+                const numB = parseInt(b.replace(gameState.cardPrefix, '')) || 0;
                 return numA - numB;
             });
             
-            sortedCards.forEach(cardId => {
-                const item = document.createElement('div');
-                item.className = 'card-list-item';
-                item.textContent = cardId;
-                item.onclick = () => toggleCardSelection(cardId, item);
-                list.appendChild(item);
-            });
+            list.innerHTML = sortedCards.map(cardId => 
+                `<div class="card-list-item" data-card-id="${cardId}">${cardId}</div>`
+            ).join('');
+        }
+        
+        function setupEventListeners() {
+            // Card list delegation only
+            const cardList = getEl('cardList');
+            if (cardList) {
+                cardList.addEventListener('click', (e) => {
+                    const item = e.target.closest('.card-list-item');
+                    if (!item) return;
+                    const cardId = item.dataset.cardId;
+                    toggleCardSelection(cardId, item);
+                });
+            }
         }
         
         function toggleCardSelection(cardId, element) {
@@ -1794,7 +1754,7 @@
                     container.innerHTML = '';
                     Object.values(gameState.cards).forEach(card => container.appendChild(renderCard(card)));
                 }, 1000);
-            }, 500);
+            }, CONFIG.PRINT_DELAY);
         }
         
         function saveGameState() {
@@ -1807,21 +1767,14 @@
         
         function resetAvailableNumbers() {
             gameState.availableNumbers = [];
-            for (let i = 1; i <= MAX_NUMBER; i++) {
+            for (let i = 1; i <= CONFIG.MAX_NUMBER; i++) {
                 if (!gameState.calledNumbers.includes(i)) gameState.availableNumbers.push(i);
             }
         }
         
-        // FIXED: Complete createBoards function with createBoard defined
         function createBoards() {
-            // Clear the element cache for board cells since we're recreating them
-            Object.keys(elements).forEach(key => {
-                if (key.includes('-num-')) delete elements[key];
-            });
-            
             createBoard('callerBoard');
             createBoard('playerBoard');
-            setupManualModeListener();
         }
         
         function createBoard(boardId) {
@@ -1830,7 +1783,7 @@
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             const letters = ['B', 'I', 'N', 'G', 'O'];
             
-            for (let row = 0; row < BINGO_SIZE; row++) {
+            for (let row = 0; row < CONFIG.BINGO_SIZE; row++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'bingo-row';
                 
@@ -1844,29 +1797,25 @@
                     cell.className = 'bingo-board-cell';
                     cell.id = `${boardId}-num-${num}`;
                     cell.textContent = num;
+                    
+                    // Direct onclick for manual mode
+                    if (boardId === 'callerBoard') {
+                        cell.onclick = function(e) {
+                            if (getEl('callingMode').value !== 'manual') return;
+                            if (gameState.calledNumbers.includes(num)) {
+                                getEl('manualError').textContent = `Number ${getBingoLetter(num)}-${num} has already been called!`;
+                                setTimeout(() => getEl('manualError').textContent = '', 2000);
+                                return;
+                            }
+                            handleManualNumberClick(num);
+                        };
+                    }
+                    
                     rowDiv.appendChild(cell);
                 }
                 
                 board.appendChild(rowDiv);
             }
-        }
-        
-        // FIXED: Setup manual mode listener with proper duplicate prevention
-        let manualModeListenerAttached = false;
-        
-        function setupManualModeListener() {
-            if (manualModeListenerAttached) return;
-            
-            const callerBoard = getEl('callerBoard');
-            
-            callerBoard.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('bingo-board-cell') || e.target.classList.contains('letter')) return;
-                if (getEl('callingMode').value !== 'manual') return;
-                
-                handleManualNumberClick(parseInt(e.target.textContent));
-            });
-            
-            manualModeListenerAttached = true;
         }
 
         function updatePattern() {
@@ -1895,10 +1844,12 @@
         }
         
         function updateBoards(lastNumber) {
+            // Clear last-called from all cells
             document.querySelectorAll('.bingo-board-cell').forEach(cell => {
                 cell.classList.remove('last-called');
             });
             
+            // Apply called and last-called states
             gameState.calledNumbers.forEach(num => {
                 ['callerBoard', 'playerBoard'].forEach(boardId => {
                     const cell = getEl(`${boardId}-num-${num}`);
@@ -1910,9 +1861,8 @@
             });
         }
         
+        // FIXED: showPanel no longer double-adds active class
         function showPanel(panelId, event) {
-            event.target.classList.add('active');
-            
             if (panelId === 'player') {
                 openPlayerWindow();
                 return;
@@ -1927,8 +1877,21 @@
             if (panelId === 'caller') updateBoards();
         }
         
+        // FIXED: Input validation
         function generateCards() {
-            const count = parseInt(getEl('cardCount').value);
+            const input = getEl('cardCount');
+            const count = parseInt(input.value);
+            
+            if (isNaN(count) || count < 1) {
+                alert('Please enter a valid number of cards (minimum 1)');
+                return;
+            }
+            
+            if (count > CONFIG.MAX_CARDS) {
+                alert(`Maximum ${CONFIG.MAX_CARDS} cards allowed`);
+                return;
+            }
+            
             const container = getEl('cardsContainer');
             container.innerHTML = '';
             const existingCards = Object.keys(gameState.cards).length;
@@ -1962,7 +1925,7 @@
         function generateColumn(min, max) {
             const available = Array.from({length: max - min + 1}, (_, i) => min + i);
             const result = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < CONFIG.BINGO_SIZE; i++) {
                 const idx = Math.floor(Math.random() * available.length);
                 result.push(available.splice(idx, 1)[0]);
             }
@@ -1987,7 +1950,7 @@
             const columns = ['B', 'I', 'N', 'G', 'O'];
             const headersHtml = columns.map(col => `<div class="bingo-header">${col}</div>`).join('');
             
-            const cellsHtml = Array.from({length: 5}, (_, row) => 
+            const cellsHtml = Array.from({length: CONFIG.BINGO_SIZE}, (_, row) => 
                 columns.map(col => {
                     const val = card[col][row];
                     const className = val === 'FREE' ? 'free' : '';
@@ -2012,7 +1975,7 @@
             container.innerHTML = '';
             Object.values(gameState.cards).forEach(card => container.appendChild(renderCard(card)));
             
-            setTimeout(() => window.print(), 500);
+            setTimeout(() => window.print(), CONFIG.PRINT_DELAY);
         }
         
         function callNextNumber() {
@@ -2096,16 +2059,9 @@
             resultDiv.innerHTML = `<div class="verification-result ${resultClass}"><h3>${title}</h3><p>${message}</p></div>`;
         }
         
-        /**
-         * Checks if a card matches the winning pattern
-         * @param {Object} card - The bingo card to check
-         * @param {string} patternKey - The pattern to check against
-         * @returns {boolean} - True if the card wins
-         */
         function checkWinPattern(card, patternKey) {
             const marked = createMarkedGrid(card);
             
-            // Patterns that can be checked via matrix matching
             const matrixPatterns = ['windmill', 'smiley', 'martini', 'bowtie', 'coverall', 'inner', 'corners'];
             if (matrixPatterns.includes(patternKey)) {
                 return matchesPatternMatrix(marked, patterns[patternKey]);
@@ -2121,19 +2077,13 @@
             }
         }
         
-        /**
-         * Checks for any winning line (horizontal, vertical, or diagonal)
-         */
         function checkLine(marked) {
             return checkHorizontal(marked) || checkVertical(marked) || checkDiagonal(marked);
         }
         
-        /**
-         * Helper function to check if marked cells match a pattern matrix
-         */
         function matchesPatternMatrix(marked, patternMatrix) {
-            for (let row = 0; row < BINGO_SIZE; row++) {
-                for (let col = 0; col < BINGO_SIZE; col++) {
+            for (let row = 0; row < CONFIG.BINGO_SIZE; row++) {
+                for (let col = 0; col < CONFIG.BINGO_SIZE; col++) {
                     if (patternMatrix[row][col] === P.REQUIRED && !marked[row][col]) return false;
                 }
             }
@@ -2142,7 +2092,7 @@
         
         function createMarkedGrid(card) {
             const columns = [card.B, card.I, card.N, card.G, card.O];
-            return Array.from({ length: BINGO_SIZE }, (_, row) => 
+            return Array.from({ length: CONFIG.BINGO_SIZE }, (_, row) => 
                 columns.map(col => isCalled(col[row]))
             );
         }
@@ -2156,7 +2106,7 @@
         }
         
         function checkVertical(marked) {
-            for (let col = 0; col < BINGO_SIZE; col++) {
+            for (let col = 0; col < CONFIG.BINGO_SIZE; col++) {
                 if (marked.every(row => row[col])) return true;
             }
             return false;
@@ -2194,7 +2144,19 @@
             return marked[2][2];
         }
         
+        // FIXED: Player window with memory management and maximized size
         function openPlayerWindow() {
+            // Clear reference if window was closed
+            if (playerWindow && playerWindow.closed) {
+                playerWindow = null;
+            }
+            
+            // Focus existing window
+            if (playerWindow && !playerWindow.closed) {
+                playerWindow.focus();
+                return;
+            }
+            
             const isDark = document.body.classList.contains('dark-mode');
             const colors = {
                 bg: isDark ? '#1a1a2e' : '#f0f2f5',
@@ -2210,272 +2172,257 @@
             const leftLogo = logoData.left[isDark ? 'dark' : 'light'];
             const rightLogo = logoData.right[isDark ? 'dark' : 'light'];
             
-            // Check if window already exists and focus it
-            if (window.playerWindow && !window.playerWindow.closed) {
-                window.playerWindow.focus();
-                return;
-            }
-            
-            // Open at full available screen size (close to maximized)
+            // Open maximized (full available screen size)
             const width = screen.availWidth;
             const height = screen.availHeight;
-            const left = 0;
-            const top = 0;
             
-            const win = window.open('', 'PlayerView', `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no`);
-            window.playerWindow = win;
+            playerWindow = window.open('', 'PlayerView', `width=${width},height=${height},left=0,top=0,resizable=yes,scrollbars=no`);
             
-            // If the window opened smaller than requested (browser restrictions), 
-            // try to resize it after a brief delay
+            // Attempt resize if browser allowed smaller size
             setTimeout(() => {
-                if (win.outerWidth < width - 100 || win.outerHeight < height - 100) {
-                    win.resizeTo(width, height);
-                    win.moveTo(0, 0);
+                if (playerWindow && playerWindow.outerWidth < width - 100) {
+                    playerWindow.resizeTo(width, height);
+                    playerWindow.moveTo(0, 0);
                 }
             }, 100);
             
-            win.document.write(`<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Bingo Master - Player View</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { 
-                    font-family: Arial, sans-serif; 
-                    text-align: center; 
-                    padding: 30px;
-                    background: ${colors.bg};
-                    color: ${colors.text};
-                    min-height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: flex-start;
-                }
-                .fullscreen-btn {
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    padding: 15px 30px;
-                    font-size: 16px;
-                    background: ${colors.letter};
-                    color: ${colors.letterText};
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                    z-index: 1000;
-                }
-                .event { font-size: 72px; font-weight: bold; color: ${colors.text}; margin-bottom: 10px; }
-                .sponsor { font-size: 36px; color: ${isDark ? '#aaa' : '#666'}; margin-bottom: 20px; }
-                .pattern { font-size: 28px; color: ${colors.text}; margin-bottom: 15px; }
-                .pattern-grid { 
-                    display: grid;
-                    grid-template-columns: repeat(5, 30px);
-                    gap: 4px;
-                    margin: 10px auto; 
-                    padding: 15px; 
-                    background: ${colors.board}; 
-                    border-radius: 8px; 
-                    border: 2px solid ${colors.border}; 
-                }
-                .pattern-cell {
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    border: 2px solid ${colors.border};
-                    background: transparent;
-                }
-                .pattern-cell.required { background: #e53935; }
-                .pattern-cell.free { background: #ffeb3b; }
-                .current { font-size: 200px; font-weight: bold; color: ${colors.text}; margin: 30px 0; line-height: 1; }
-                .board { 
-                    display: grid;
-                    grid-template-columns: 70px repeat(15, 52px);
-                    gap: 3px;
-                    border: 3px solid ${colors.border};
-                    border-radius: 8px;
-                    overflow: hidden;
-                    background: ${colors.board};
-                    margin: 0 auto;
-                }
-                .bingo-cell { 
-                    height: 52px;
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center; 
-                    font-size: 22px; 
-                    font-weight: bold;
-                    border: 1px solid ${isDark ? '#0f3460' : '#ddd'}; 
-                    background: ${colors.cell};
-                    color: ${colors.cellText};
-                }
-                .bingo-cell.letter { background: ${colors.letter}; color: ${colors.letterText}; font-size: 32px; font-weight: bold; }
-                .bingo-cell.called { background: #4caf50; color: white; }
-                .bingo-cell.last-called { background: #ffeb3b; color: #1a237e; border: 3px solid #ff5722; }
-            </style>
-        </head>
-        <body>
-            <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
-                ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-                <div>
-                    <div class="event" id="eventName">${gameState.eventName}</div>
-                    <div class="sponsor" id="sponsorName">${gameState.sponsorName}</div>
-                </div>
-                ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
-            </div>
-            <div class="pattern" id="patternText">Pattern: ${patternNames[gameState.currentPattern]}</div>
-            <div class="pattern-grid" id="patternGrid"></div>
-            <div class="current" id="pcur">--</div>
-            <div class="board" id="pboard"></div>
-            <script>
-                const P = { EMPTY: 0, REQUIRED: 1, FREE: 2 };
-                const patterns = {
-                    normal: [[0,0,0,0,0],[0,0,0,0,0],[1,1,2,1,1],[0,0,0,0,0],[0,0,0,0,0]],
-                    corners: [[1,0,0,0,1],[0,0,0,0,0],[0,0,2,0,0],[0,0,0,0,0],[1,0,0,0,1]],
-                    outside: [[1,1,1,1,1],[1,0,0,0,1],[1,0,2,0,1],[1,0,0,0,1],[1,1,1,1,1]],
-                    coverall: [[1,1,1,1,1],[1,1,1,1,1],[1,1,2,1,1],[1,1,1,1,1],[1,1,1,1,1]],
-                    inner: [[0,0,0,0,0],[0,1,1,1,0],[0,1,2,1,0],[0,1,1,1,0],[0,0,0,0,0]],
-                    windmill: [[1,1,0,1,1],[1,1,0,1,1],[0,0,2,0,0],[1,1,0,1,1],[1,1,0,1,1]],
-                    x: [[1,0,0,0,1],[0,1,0,1,0],[0,0,2,0,0],[0,1,0,1,0],[1,0,0,0,1]],
-                    plus: [[0,0,1,0,0],[0,0,1,0,0],[1,1,2,1,1],[0,0,1,0,0],[0,0,1,0,0]],
-                    checkerboard: [[1,0,1,0,1],[0,1,0,1,0],[1,0,2,0,1],[0,1,0,1,0],[1,0,1,0,1]],
-                    smiley: [[0,1,0,1,0],[0,1,0,1,0],[0,0,2,0,0],[1,0,0,0,1],[0,1,1,1,0]],
-                    martini: [[1,1,1,1,1],[0,1,1,1,0],[0,0,2,0,0],[0,0,1,0,0],[0,1,1,1,0]],
-                    bowtie: [[0,0,0,0,0],[1,1,0,1,1],[1,1,1,1,1],[1,1,0,1,1],[0,0,0,0,0]]
-                };
-                const patternNames = {
-                    normal: 'Normal (Any Line)', corners: '4 Corners', outside: 'Outside Edge',
-                    coverall: 'Cover All', inner: 'Inner Frame', windmill: 'Windmill',
-                    x: 'X', plus: 'Plus', checkerboard: 'Checkerboard', smiley: 'Smiley Face',
-                    martini: 'Martini Glass', bowtie: 'Bow Tie'
-                };
+            const patternsJson = JSON.stringify(patterns);
+            const patternNamesJson = JSON.stringify(patternNames);
+            
+            playerWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Bingo Master - Player View</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 30px;
+            background: ${colors.bg};
+            color: ${colors.text};
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            font-size: 16px;
+            background: ${colors.letter};
+            color: ${colors.letterText};
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .event { font-size: 72px; font-weight: bold; color: ${colors.text}; margin-bottom: 10px; }
+        .sponsor { font-size: 36px; color: ${isDark ? '#aaa' : '#666'}; margin-bottom: 20px; }
+        .pattern { font-size: 28px; color: ${colors.text}; margin-bottom: 15px; }
+        .pattern-grid { 
+            display: grid;
+            grid-template-columns: repeat(5, 30px);
+            gap: 4px;
+            margin: 10px auto; 
+            padding: 15px; 
+            background: ${colors.board}; 
+            border-radius: 8px; 
+            border: 2px solid ${colors.border}; 
+        }
+        .pattern-cell {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid ${colors.border};
+            background: transparent;
+        }
+        .pattern-cell.required { background: #e53935; }
+        .pattern-cell.free { background: #ffeb3b; }
+        .current { font-size: 200px; font-weight: bold; color: ${colors.text}; margin: 30px 0; line-height: 1; }
+        .board { 
+            display: grid;
+            grid-template-columns: 70px repeat(15, 52px);
+            gap: 3px;
+            border: 3px solid ${colors.border};
+            border-radius: 8px;
+            overflow: hidden;
+            background: ${colors.board};
+            margin: 0 auto;
+        }
+        .bingo-cell { 
+            height: 52px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 22px; 
+            font-weight: bold;
+            border: 1px solid ${isDark ? '#0f3460' : '#ddd'}; 
+            background: ${colors.cell};
+            color: ${colors.cellText};
+        }
+        .bingo-cell.letter { background: ${colors.letter}; color: ${colors.letterText}; font-size: 32px; font-weight: bold; }
+        .bingo-cell.called { background: #4caf50; color: white; }
+        .bingo-cell.last-called { background: #ffeb3b; color: #1a237e; border: 3px solid #ff5722; }
+    </style>
+</head>
+<body>
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
+        ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+        <div>
+            <div class="event" id="eventName">${gameState.eventName}</div>
+            <div class="sponsor" id="sponsorName">${gameState.sponsorName}</div>
+        </div>
+        ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+    </div>
+    <div class="pattern" id="patternText">Pattern: ${patternNames[gameState.currentPattern]}</div>
+    <div class="pattern-grid" id="patternGrid"></div>
+    <div class="current" id="pcur">--</div>
+    <div class="board" id="pboard"></div>
+    <script>
+        const P = { EMPTY: 0, REQUIRED: 1, FREE: 2 };
+        const patterns = ${patternsJson};
+        const patternNames = ${patternNamesJson};
+        
+        function createBoard() {
+            const b = document.getElementById('pboard');
+            const letters = ['B','I','N','G','O'];
+            const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+            
+            for(let row=0; row<5; row++) {
+                const lc = document.createElement('div');
+                lc.className = 'bingo-cell letter';
+                lc.textContent = letters[row];
+                b.appendChild(lc);
                 
-                function createBoard() {
-                    const b = document.getElementById('pboard');
-                    const letters = ['B','I','N','G','O'];
-                    const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
-                    
-                    for(let row=0; row<5; row++) {
-                        const lc = document.createElement('div');
-                        lc.className = 'bingo-cell letter';
-                        lc.textContent = letters[row];
-                        b.appendChild(lc);
-                        
-                        for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
-                            const c = document.createElement('div');
-                            c.id = 'p-'+n;
-                            c.className = 'bingo-cell';
-                            c.textContent = n;
-                            b.appendChild(c);
-                        }
+                for(let n=ranges[row][0]; n<=ranges[row][1]; n++) {
+                    const c = document.createElement('div');
+                    c.id = 'p-'+n;
+                    c.className = 'bingo-cell';
+                    c.textContent = n;
+                    b.appendChild(c);
+                }
+            }
+        }
+        
+        function updatePatternGrid(patternKey) {
+            const grid = document.getElementById('patternGrid');
+            const pattern = patterns[patternKey] || patterns.normal;
+            grid.innerHTML = '';
+            
+            for(let row=0; row<5; row++) {
+                for(let col=0; col<5; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'pattern-cell';
+                    if(pattern[row][col] === P.REQUIRED) cell.classList.add('required');
+                    else if(pattern[row][col] === P.FREE) cell.classList.add('free');
+                    grid.appendChild(cell);
+                }
+            }
+        }
+        
+        function update() {
+            const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
+            const c = d.calledNumbers?.[d.calledNumbers.length-1];
+            const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
+            
+            document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
+            
+            if(d.currentPattern) {
+                document.getElementById('patternText').textContent = 'Pattern: ' + (patternNames[d.currentPattern] || 'Normal (Any Line)');
+                updatePatternGrid(d.currentPattern);
+            }
+            
+            document.querySelectorAll('.bingo-cell').forEach(cell => {
+                cell.classList.remove('called', 'last-called');
+            });
+            
+            d.calledNumbers?.forEach((n, index) => {
+                const cell = document.getElementById('p-'+n);
+                if(cell) {
+                    cell.classList.add('called');
+                    if(index === d.calledNumbers.length - 1) {
+                        cell.classList.add('last-called');
                     }
                 }
-                
-                function updatePatternGrid(patternKey) {
-                    const grid = document.getElementById('patternGrid');
-                    const pattern = patterns[patternKey] || patterns.normal;
-                    grid.innerHTML = '';
-                    
-                    for(let row=0; row<5; row++) {
-                        for(let col=0; col<5; col++) {
-                            const cell = document.createElement('div');
-                            cell.className = 'pattern-cell';
-                            if(pattern[row][col] === P.REQUIRED) cell.classList.add('required');
-                            else if(pattern[row][col] === P.FREE) cell.classList.add('free');
-                            grid.appendChild(cell);
-                        }
-                    }
-                }
-                
-                function update() {
-                    const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
-                    const c = d.calledNumbers?.[d.calledNumbers.length-1];
-                    const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
-                    
-                    // Update current number display
-                    document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
-                    
-                    // Update pattern if changed
-                    if(d.currentPattern) {
-                        document.getElementById('patternText').textContent = 'Pattern: ' + (patternNames[d.currentPattern] || 'Normal (Any Line)');
-                        updatePatternGrid(d.currentPattern);
-                    }
-                    
-                    // Clear all cells first
-                    document.querySelectorAll('.bingo-cell').forEach(cell => {
-                        cell.classList.remove('called', 'last-called');
-                    });
-                    
-                    // Re-apply called states
-                    d.calledNumbers?.forEach((n, index) => {
-                        const cell = document.getElementById('p-'+n);
-                        if(cell) {
-                            cell.classList.add('called');
-                            if(index === d.calledNumbers.length - 1) {
-                                cell.classList.add('last-called');
-                            }
-                        }
-                    });
-                }
-                
-                function toggleFS() {
-                    const btn = document.getElementById('fsBtn');
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen();
-                        btn.textContent = '⛶ Exit Full Screen';
-                    } else {
-                        document.exitFullscreen();
-                        btn.textContent = '⛶ Full Screen';
-                    }
-                }
-                
-                document.addEventListener('fullscreenchange', () => {
-                    document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
-                });
-                
-                createBoard();
-                updatePatternGrid('${gameState.currentPattern}');
-                setInterval(update, 1000);
-                update();
-            <\/script>
-        </body>
-        </html>`);
+            });
+        }
+        
+        function toggleFS() {
+            const btn = document.getElementById('fsBtn');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                btn.textContent = '⛶ Exit Full Screen';
+            } else {
+                document.exitFullscreen();
+                btn.textContent = '⛶ Full Screen';
+            }
+        }
+        
+        document.addEventListener('fullscreenchange', () => {
+            document.getElementById('fsBtn').textContent = document.fullscreenElement ? '⛶ Exit Full Screen' : '⛶ Full Screen';
+        });
+        
+        createBoard();
+        updatePatternGrid('${gameState.currentPattern}');
+        setInterval(update, 1000);
+        update();
+    <\/script>
+</body>
+</html>`);
         }
         
         function clearAllData() {
             if (!confirm('Clear ALL data? This cannot be undone!')) return;
             
+            // Clear localStorage
             Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
             
-            gameState = { 
-                calledNumbers: [], 
-                availableNumbers: [], 
-                cards: {}, 
-                autoCallInterval: null, 
-                isAutoCalling: false, 
-                currentPattern: 'normal', 
-                eventName: 'Charity Bingo Night', 
-                sponsorName: 'Sponsored by Local Business', 
-                cardPrefix: 'A-', 
-                autoCallSeconds: 5 
-            };
+            // Reset game state
+            gameState.calledNumbers = [];
+            gameState.availableNumbers = [];
+            gameState.cards = {};
+            gameState.autoCallInterval = null;
+            gameState.isAutoCalling = false;
+            gameState.currentPattern = 'normal';
+            gameState.eventName = 'Charity Bingo Night';
+            gameState.sponsorName = 'Sponsored by Local Business';
+            gameState.cardPrefix = 'A-';
+            gameState.autoCallSeconds = CONFIG.DEFAULT_AUTO_CALL_SECONDS;
             
-            logoData = { left: { light: null, dark: null }, right: { light: null, dark: null } };
+            // Reset logo data
+            logoData.left = { light: null, dark: null };
+            logoData.right = { light: null, dark: null };
             
+            // Clear selections
             selectedCards.clear();
-            resetAvailableNumbers();
-            createBoards();
-            getEl('cardsContainer').innerHTML = '';
-            updateCardUI();
             
+            // Update ALL UI elements
+            getEl('cardsContainer').innerHTML = '';
+            updateCardCount();
+            updateCardList();
+            createBoards();
+            updateStats();
+            updateDisplay(null);
+            
+            // Clear logo previews
             ['left', 'right'].forEach(pos => {
                 ['light', 'dark'].forEach(mode => {
                     const previewId = `${pos}${capitalize(mode)}LogoPreview`;
-                    getEl(previewId).innerHTML = '<span class="placeholder">No logo</span>';
+                    const el = document.getElementById(previewId);
+                    if (el) el.innerHTML = '<span class="placeholder">No logo</span>';
                 });
             });
+            
+            // Reset form inputs
+            getEl('eventNameInput').value = gameState.eventName;
+            getEl('sponsorNameInput').value = gameState.sponsorName;
+            getEl('cardPrefixInput').value = gameState.cardPrefix;
             
             alert('All data cleared!');
         }
