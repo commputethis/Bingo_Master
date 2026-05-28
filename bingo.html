@@ -770,7 +770,7 @@
                 
                 <div class="input-group">
                     <label>Number of Cards to Generate:</label>
-                    <input type="number" id="cardCount" min="1" max="500" value="10">
+                    <input type="number" id="cardCount" min="1" max="5000" value="10">
                 </div>
                 <button onclick="generateCards()">Generate Cards</button>
                 <button class="secondary" onclick="printCards()">Print All Cards (4 per page)</button>
@@ -1624,7 +1624,16 @@
         function updateCardList() {
             const list = document.getElementById('cardList');
             list.innerHTML = '';
-            Object.keys(gameState.cards).sort().forEach(cardId => {
+            
+            // Sort numerically by extracting the number from card ID
+            const sortedCards = Object.keys(gameState.cards).sort((a, b) => {
+                // Extract numeric part (everything after the prefix)
+                const numA = parseInt(a.replace(gameState.cardPrefix, ''));
+                const numB = parseInt(b.replace(gameState.cardPrefix, ''));
+                return numA - numB;
+            });
+            
+            sortedCards.forEach(cardId => {
                 const item = document.createElement('div');
                 item.className = 'card-list-item';
                 item.textContent = cardId;
