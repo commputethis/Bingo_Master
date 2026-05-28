@@ -883,6 +883,7 @@
                     <p style="margin-bottom: 15px;">Click any number on the board above to mark it as called</p>
                     <div id="manualError" style="color: #f44336; margin-bottom: 10px; font-size: 14px; min-height: 20px;"></div>
                     <button onclick="undoLastCall()" class="secondary" style="background: #ff9800;">↩️ Undo Last Call</button>
+                    <button class="danger" onclick="resetGame()">Reset Game</button>
                 </div>
                 <div class="controls">
                     <button onclick="callNextNumber()">Call Next Number</button>
@@ -1004,20 +1005,55 @@
                 <!-- Logos Section - Full Width -->
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd;">
                     <h3 style="color: #1a237e; margin-bottom: 20px;">Event Logos</h3>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                        Upload different logos for light and dark modes. The appropriate logo will display based on the current theme.
+                    </p>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <div class="input-group">
-                            <label>Left Logo:</label>
-                            <input type="file" id="leftLogoInput" accept="image/*" onchange="previewLogo('left')">
-                            <div id="leftLogoPreview" style="margin-top: 10px; max-width: 150px;"></div>
-                            <button onclick="clearLogo('left')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                        <!-- Left Logo -->
+                        <div>
+                            <h4 style="color: #1a237e; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Left Logo</h4>
+                            
+                            <div class="input-group" style="margin-bottom: 20px;">
+                                <label>☀️ Light Mode:</label>
+                                <input type="file" id="leftLightLogoInput" accept="image/*" onchange="previewLogo('left', 'light')">
+                                <div id="leftLightLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                </div>
+                                <button onclick="clearLogo('left', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>🌙 Dark Mode:</label>
+                                <input type="file" id="leftDarkLogoInput" accept="image/*" onchange="previewLogo('left', 'dark')">
+                                <div id="leftDarkLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                </div>
+                                <button onclick="clearLogo('left', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                            </div>
                         </div>
                         
-                        <div class="input-group">
-                            <label>Right Logo:</label>
-                            <input type="file" id="rightLogoInput" accept="image/*" onchange="previewLogo('right')">
-                            <div id="rightLogoPreview" style="margin-top: 10px; max-width: 150px;"></div>
-                            <button onclick="clearLogo('right')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                        <!-- Right Logo -->
+                        <div>
+                            <h4 style="color: #1a237e; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Right Logo</h4>
+                            
+                            <div class="input-group" style="margin-bottom: 20px;">
+                                <label>☀️ Light Mode:</label>
+                                <input type="file" id="rightLightLogoInput" accept="image/*" onchange="previewLogo('right', 'light')">
+                                <div id="rightLightLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                </div>
+                                <button onclick="clearLogo('right', 'light')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>🌙 Dark Mode:</label>
+                                <input type="file" id="rightDarkLogoInput" accept="image/*" onchange="previewLogo('right', 'dark')">
+                                <div id="rightDarkLogoPreview" style="margin-top: 10px; max-width: 150px; min-height: 50px; border: 1px dashed #ccc; padding: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #999; font-size: 12px;">No logo</span>
+                                </div>
+                                <button onclick="clearLogo('right', 'dark')" style="margin-top: 5px; padding: 5px 15px; font-size: 12px;">Clear</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1208,42 +1244,51 @@
         }
 
         let logoData = {
-            left: null,
-            right: null
+            left: { light: null, dark: null },
+            right: { light: null, dark: null }
         };
 
-        function previewLogo(side) {
-            const input = document.getElementById(side + 'LogoInput');
-            const preview = document.getElementById(side + 'LogoPreview');
+        function previewLogo(position, mode) {
+            const input = document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput');
+            const preview = document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview');
             
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    logoData[side] = e.target.result;
+                    logoData[position][mode] = e.target.result;
                     preview.innerHTML = `<img src="${e.target.result}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function clearLogo(side) {
-            logoData[side] = null;
-            document.getElementById(side + 'LogoInput').value = '';
-            document.getElementById(side + 'LogoPreview').innerHTML = '';
+        function clearLogo(position, mode) {
+            logoData[position][mode] = null;
+            document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoInput').value = '';
+            document.getElementById(position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview').innerHTML = '<span style="color: #999; font-size: 12px;">No logo</span>';
         }
 
         function loadLogos() {
             const saved = localStorage.getItem('bingoLogos');
             if (saved) {
-                logoData = JSON.parse(saved);
-                if (logoData.left) {
-                    document.getElementById('leftLogoPreview').innerHTML = 
-                        `<img src="${logoData.left}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
-                }
-                if (logoData.right) {
-                    document.getElementById('rightLogoPreview').innerHTML = 
-                        `<img src="${logoData.right}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
-                }
+                const parsed = JSON.parse(saved);
+                // Merge with default structure
+                logoData = {
+                    left: { light: null, dark: null, ...parsed.left },
+                    right: { light: null, dark: null, ...parsed.right }
+                };
+                
+                // Update all previews
+                ['left', 'right'].forEach(position => {
+                    ['light', 'dark'].forEach(mode => {
+                        const logo = logoData[position][mode];
+                        const previewId = position + mode.charAt(0).toUpperCase() + mode.slice(1) + 'LogoPreview';
+                        if (logo) {
+                            document.getElementById(previewId).innerHTML = 
+                                `<img src="${logo}" style="max-width: 150px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">`;
+                        }
+                    });
+                });
             }
         }
 
@@ -1791,15 +1836,18 @@
             const letters = ['B', 'I', 'N', 'G', 'O'];
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             
+            // Create 5 rows (one per letter) with 16 columns (letter + 15 numbers)
             for (let row = 0; row < 5; row++) {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'bingo-row';
                 
+                // Letter cell first
                 const letterCell = document.createElement('div');
                 letterCell.className = 'bingo-board-cell letter';
                 letterCell.textContent = letters[row];
                 rowDiv.appendChild(letterCell);
                 
+                // Then 15 number cells for this letter's range
                 for (let num = ranges[row][0]; num <= ranges[row][1]; num++) {
                     const cell = document.createElement('div');
                     cell.className = 'bingo-board-cell';
@@ -1818,7 +1866,7 @@
                 
                 board.appendChild(rowDiv);
             }
-        }
+}
         
         function updatePattern() {
             gameState.currentPattern = document.getElementById('winningPattern').value;
@@ -1932,6 +1980,20 @@
             const eventName = gameState.eventName || 'BINGO';
             const sponsorName = gameState.sponsorName || '';
             
+            // Get current theme logos
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const leftLogo = isDarkMode ? logoData.left.dark : logoData.left.light;
+            const rightLogo = isDarkMode ? logoData.right.dark : logoData.right.light;
+            
+            // Build logo HTML
+            let logosHtml = '';
+            if (leftLogo || rightLogo) {
+                logosHtml = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 60px;">`;
+                logosHtml += leftLogo ? `<img src="${leftLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>';
+                logosHtml += rightLogo ? `<img src="${rightLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>';
+                logosHtml += `</div>`;
+            }
+            
             // Header row - plain letters, no squares
             let gridHtml = '';
             gridHtml += `<div class="bingo-header">B</div>`;
@@ -1952,6 +2014,7 @@
             div.innerHTML = `
                 <div class="card-header">
                     <div class="card-id">Card ID: ${card.id}</div>
+                    ${logosHtml}
                     <div class="card-event-name">${eventName}</div>
                     <div class="card-sponsor-name">${sponsorName}</div>
                 </div>
@@ -2329,12 +2392,12 @@
         <body>
             <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
             <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
-                ${logoData.left ? `<img src="${logoData.left}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+                ${logoData.left[isDarkMode ? 'dark' : 'light'] ? `<img src="${logoData.left[isDarkMode ? 'dark' : 'light']}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
                 <div>
                     <div class="event">${gameState.eventName}</div>
                     <div class="sponsor">${gameState.sponsorName}</div>
                 </div>
-                ${logoData.right ? `<img src="${logoData.right}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+                ${logoData.right[isDarkMode ? 'dark' : 'light'] ? `<img src="${logoData.right[isDarkMode ? 'dark' : 'light']}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
             </div>
             <div class="pattern">Pattern: ${patternNames[gameState.currentPattern]}</div>
             <div class="pattern-grid">${patternHtml}</div>
