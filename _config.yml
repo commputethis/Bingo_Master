@@ -1,4 +1,1 @@
-# _config.yml
-theme: minima
-minima:
-  skin: dark   
+theme: jekyll-theme-midnight
