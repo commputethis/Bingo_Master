@@ -1,10 +1,46 @@
 # Bingo Master
 
-A complete, self-hosted bingo solution that runs entirely in your browser with no internet connection required.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://commputethis.github.io/Bingo_Master/bingo.html)
+
+A complete, self-hosted charity bingo solution that runs entirely in your browser with no internet connection required.
+
+**🎮 Live Demo:** [Play Bingo Master Online](https://commputethis.github.io/Bingo_Master/bingo.html)
+
+*Note: If you visit [https://commputethis.github.io/Bingo_Master/](https://commputethis.github.io/Bingo_Master/), click the link above to launch the caller.*
+
+---
+
+## 📸 Screenshots
+
+| Dark Mode | Light Mode |
+| --------- | ---------- |
+| ![Dark Mode Main](screenshots/dark-mode-main.png) | ![Light Mode Main](screenshots/light-mode-main.png) |
+| *Main caller interface in dark mode* | *Main caller interface in light mode* |
+
+| Card Generator | Player View |
+| ------------- | ----------- |
+| ![Card Generator](screenshots/card-generator.png) | ![Player View](screenshots/player-view.png) |
+| *Generate and print bingo cards* | *Large-format player display* |
+
+| Winner Verification | Settings |
+| ------------------- | -------- |
+| ![Verification](screenshots/verification.png) | ![Settings](screenshots/settings.png) |
+| *Verify winning cards instantly* | *Customize your event* |
+
+---
 
 ## Overview
 
 Bingo Master is a fully-featured bingo management system designed for charity events, community gatherings, and bingo nights. It generates unique bingo cards, calls numbers, verifies winners, and displays game information - all running locally in your web browser.
+
+## Quick Start (Online)
+
+Want to try it out right now?
+
+👉 **[Launch Bingo Master](https://commputethis.github.io/Bingo_Master/bingo.html)**
+
+No download needed! The online version works exactly like the downloadable version. Your data is still stored locally in your browser.
 
 ## Features
 
@@ -26,7 +62,7 @@ Bingo Master is a fully-featured bingo management system designed for charity ev
 ### Audio Calling
 
 - **Text-to-speech** announces numbers aloud
-- **Smart audio**: Only speaks during Auto Call (configurable to speak during manual calls)
+- **Smart audio**: Only plays during Auto Call (configurable to speak during manual calls)
 - **Voice selection**: Choose from available system voices
 - **Clear pronunciation**: "B... 12" or "N... 34"
 
@@ -50,7 +86,7 @@ Bingo Master is a fully-featured bingo management system designed for charity ev
 
 - **Export/Import** - Backup or transfer to another machine via JSON file
 - **Local storage** - All data saved in your browser
-- **No internet required** after initial load
+- **No internet required** after initial load (downloadable version)
 
 ## System Requirements
 
@@ -60,17 +96,27 @@ Bingo Master is a fully-featured bingo management system designed for charity ev
 - Optional: Projector or large screen for player view
 - Optional: Speakers for audio calling
 
-## Installation
+## Installation Options
 
-1. Download `bingo.html` to your computer
+### Option 1: Use Online (Easiest)
+
+Simply visit: **[https://commputethis.github.io/Bingo_Master/bingo.html](https://commputethis.github.io/Bingo_Master/bingo.html)**
+
+Your data is stored in your browser's local storage just like the downloaded version.
+
+### Option 2: Download for Offline Use
+
+1. Download `bingo.html` from the repository
 2. Double-click the file to open in your web browser
-3. That's it! No installation required
+3. No installation required - works completely offline!
 
 ## Quick Start Guide
 
 ### Before Your Event
 
-1. **Open Bingo Master** by double-clicking `bingo.html`
+1. **Open Bingo Master**:
+   - **Online**: Visit [https://commputethis.github.io/Bingo_Master/bingo.html](https://commputethis.github.io/Bingo_Master/bingo.html)
+   - **Offline**: Double-click `bingo.html`
 
 2. **Configure Settings** (Settings tab):
    - Enter your **Event Name**
@@ -168,7 +214,7 @@ Bingo Master is a fully-featured bingo management system designed for charity ev
 ### Import (Destination Computer)
 
 1. Copy the `.json` file to the new computer
-2. Open `bingo.html` on new computer
+2. Open Bingo Master (online or offline version)
 3. Go to **Manage** tab
 4. Click **Import Data** and select the `.json` file
 5. Confirm to replace current data
@@ -256,9 +302,16 @@ All data is stored locally in your browser using LocalStorage:
 - **Spacebar**: Call next number (in Automatic mode)
 - **ESC**: Exit fullscreen
 
+## Source Code
+
+View the source code or contribute on GitHub:  
+[https://github.com/commputethis/Bingo_Master](https://github.com/commputethis/Bingo_Master)
+
 ## License
 
-MIT License - Feel free to use, modify, and distribute for your charity events.
+MIT License — See [LICENSE](LICENSE) for details.
+
+Copyright (c) 2026 David Prows
 
 ---
 
