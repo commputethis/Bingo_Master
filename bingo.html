@@ -1791,12 +1791,19 @@
         }
         
         function showPanel(panelId) {
+            // If clicking player view, open window immediately and don't switch tab
+            if (panelId === 'player') {
+                openPlayerWindow();
+                // Don't activate the player tab - stay on current tab
+                return;
+            }
+            
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(panelId).classList.add('active');
             event.target.classList.add('active');
-            if (panelId === 'player') {
-                updatePlayerView();
+            
+            if (panelId === 'caller') {
                 updateBoards();
             }
         }
