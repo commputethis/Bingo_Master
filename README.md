@@ -81,6 +81,7 @@ No download needed! The online version works exactly like the downloadable versi
 - **Fullscreen support** with toggle button
 - **Customizable event name and sponsor** on cards and displays
 - **Optional logos** for event branding (left and right of header)
+  - See [Logo Specifications](#logo-specifications) below
 
 ### Data Management
 
@@ -95,6 +96,41 @@ No download needed! The online version works exactly like the downloadable versi
 - Printer (for printing bingo cards)
 - Optional: Projector or large screen for player view
 - Optional: Speakers for audio calling
+
+## Logo Specifications
+
+### Display Sizes
+
+| Location | Max Width | Max Height | Notes |
+| - | - | - | - |
+| Bingo Cards | 120px per logo | 60px | Positioned left/right above card grid |
+| Player View Window | 200px per logo | 80px | Larger display for projection |
+| Settings Preview | 150px | 100px | Thumbnail preview in settings panel |
+
+### Recommended Upload Specs
+
+- Format: PNG (with transparency recommended) or JPG
+- Recommended Size: 200-400px width, proportional height
+- Aspect Ratio: Wide/horizontal orientation works best
+- File Size: Under 500KB per logo (stored in browser localStorage)
+- Style: Simple, high-contrast logos work best for both dark and light modes
+
+### Important Notes
+
+- Logos are automatically scaled to fit while maintaining aspect ratio (object-fit: contain)
+- Upload separate versions for Light Mode and Dark Mode for best visibility
+- Logos are stored locally in your browser (base64 encoded) - they are not uploaded to any server
+- Maximum recommended total storage: ~5MB for all logos combined (browser localStorage limit)
+
+### Suggested Logo Dimensions
+
+For best results across all displays, upload logos approximately:
+
+- Width: 200-400 pixels
+- Height: 100-200 pixels
+- Transparent background: Recommended for seamless integration
+
+This gives you flexibility while ensuring the logos look crisp when scaled down on cards and up in the player view.
 
 ## Installation Options
 
