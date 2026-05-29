@@ -433,6 +433,11 @@
             color: #666;
         }
         
+        .checkbox-input {
+            width: auto !important;
+            margin-right: 10px;
+        }
+
         .bingo-grid { 
             display: grid; 
             grid-template-columns: repeat(5, 55px); 
@@ -901,7 +906,7 @@
             font-size: 12px;
         }
 
-        .margin-top-15 {
+        .mt-15 {
             margin-top: 15px;
         }
     </style>
@@ -942,7 +947,7 @@
                     <h3>Reprint Specific Cards</h3>
                     <p>Click cards below to select, then click Reprint Selected</p>
                     <div class="card-list" id="cardList"></div>
-                    <button class="secondary margin-top-15" onclick="reprintSelected()">Reprint Selected Cards</button>
+                    <button class="secondary mt-15" onclick="reprintSelected()">Reprint Selected Cards</button>
                     <button onclick="selectAllCards()">Select All</button>
                     <button onclick="clearCardSelection()">Clear Selection</button>
                 </div>
@@ -1091,7 +1096,7 @@
                         
                         <div class="input-group">
                             <label>
-                                <input type="checkbox" id="audioCallEnabled" checked style="width: auto; margin-right: 10px;">
+                                <input type="checkbox" id="audioCallEnabled" checked>
                                 Enable Audio Calling
                             </label>
                         </div>
@@ -1105,7 +1110,7 @@
                         
                         <div class="input-group">
                             <label>
-                                <input type="checkbox" id="speakManualCalls" style="width: auto; margin-right: 10px;">
+                                <input type="checkbox" id="speakManualCalls">
                                 Speak Numbers During Manual Calls
                             </label>
                             <p class="text-small text-muted" style="margin-top: 5px; margin-left: 25px;">
@@ -1269,7 +1274,7 @@
             checkerboard: [[P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.FREE,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED]],
             smiley: [[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.REQUIRED,P.EMPTY,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.REQUIRED,P.EMPTY,P.EMPTY,P.EMPTY,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY]],
             martini: [[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY],[P.EMPTY,P.EMPTY,P.FREE,P.EMPTY,P.EMPTY],[P.EMPTY,P.EMPTY,P.REQUIRED,P.EMPTY,P.EMPTY],[P.EMPTY,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.EMPTY]],
-            bowtie: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]]
+            bowtie: [[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.FREE,P.REQUIRED,P.REQUIRED],[P.REQUIRED,P.REQUIRED,P.EMPTY,P.REQUIRED,P.REQUIRED],[P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY,P.EMPTY]]
         };
 
         // Logo data structure
@@ -1381,6 +1386,10 @@
                     cardPrefix: gameState.cardPrefix,
                     autoCallSeconds: gameState.autoCallSeconds
                 },
+                audio: {
+                    enabled: getEl('audioCallEnabled').checked,
+                    speakManualCalls: getEl('speakManualCalls').checked
+                },
                 logos: logoData,
                 darkMode: document.body.classList.contains('dark-mode'),
                 exportDate: new Date().toISOString(),
@@ -1434,7 +1443,7 @@
                 eventName: data.settings.eventName || 'Charity Bingo Night',
                 sponsorName: data.settings.sponsorName || 'Sponsored by Local Business',
                 cardPrefix: data.settings.cardPrefix || 'A-',
-                autoCallSeconds: data.settings.autoCallSeconds || CONFIG.DEFAULT_AUTO_CALL_SECONDS
+                autoCallSeconds: data.settings.autoCallSeconds || CONFIG.DEFAULT_AUTO_CALL_SECONDS,
             });
             
             if (data.logos) {
@@ -1444,6 +1453,13 @@
             
             if (data.darkMode !== undefined) {
                 localStorage.setItem(STORAGE_KEYS.DARK_MODE, data.darkMode ? 'true' : 'false');
+            }
+
+            if (data.audio) {
+                localStorage.setItem(STORAGE_KEYS.AUDIO, JSON.stringify({
+                    enabled: data.audio.enabled ?? true,
+                    speakManualCalls: data.audio.speakManualCalls ?? false
+                }));
             }
             
             saveGameState();
@@ -1591,6 +1607,7 @@
             const newLast = gameState.calledNumbers[gameState.calledNumbers.length - 1];
             updateDisplay(newLast || null);
             updateStats();
+            if (newLast) updateBoards(newLast);
             
             errorDiv.style.color = '#4caf50';
             errorDiv.textContent = `Removed ${getBingoLetter(lastNumber)}-${lastNumber}`;
@@ -1783,10 +1800,11 @@
         }
         
         function resetAvailableNumbers() {
-            gameState.availableNumbers = [];
-            for (let i = 1; i <= CONFIG.MAX_NUMBER; i++) {
-                if (!gameState.calledNumbers.includes(i)) gameState.availableNumbers.push(i);
-            }
+            const calledSet = new Set(gameState.calledNumbers);
+            gameState.availableNumbers = Array.from(
+                { length: CONFIG.MAX_NUMBER }, 
+                (_, i) => i + 1
+            ).filter(n => !calledSet.has(n));
         }
         
         function createBoards() {
@@ -1796,21 +1814,11 @@
             
             if (callerBoard) {
                 createBoard('callerBoard');
-            } else {
-                console.warn('callerBoard not found, will retry later');
-                // Retry after a short delay
-                setTimeout(() => {
-                    if (document.getElementById('callerBoard')) {
-                        createBoard('callerBoard');
-                    }
-                }, 100);
             }
             
-            // Player board is optional (mainly used for player view window now)
             if (playerBoard) {
                 createBoard('playerBoard');
             }
-            // Don't warn if playerBoard doesn't exist - it's not critical
         }
         
         function createBoard(boardId) {
@@ -1885,17 +1893,12 @@
         
         function renderPatternGrid(gridId, patternKey) {
             const grid = getEl(gridId);
-            const pattern = patterns[patternKey];
-            
-            // Safety check - if pattern doesn't exist, use normal
-            if (!pattern) {
+            if (!patterns[patternKey]) {
                 console.warn('Pattern not found:', patternKey, '- using normal');
                 patternKey = 'normal';
             }
-            
-            const patternData = patterns[patternKey];
-            
-            grid.innerHTML = patternData.flat().map(cell => {
+            const pattern = patterns[patternKey];
+            grid.innerHTML = pattern.flat().map(cell => {
                 const className = cell === P.REQUIRED ? 'required' : cell === P.FREE ? 'free' : '';
                 return `<div class="pattern-cell ${className}"></div>`;
             }).join('');
@@ -1931,7 +1934,9 @@
             getEl(panelId).classList.add('active');
             event.target.classList.add('active');
             
-            if (panelId === 'caller') updateBoards();
+            if (panelId === 'caller') {
+                updateBoards(gameState.calledNumbers[gameState.calledNumbers.length - 1]);
+            }
         }
         
         function generateCards() {
@@ -2089,6 +2094,8 @@
         
         function resetGame() {
             if (!confirm('Reset game? This clears called numbers but keeps cards.')) return;
+
+            if (gameState.isAutoCalling) toggleAutoCall();
             
             gameState.calledNumbers = [];
             resetAvailableNumbers();
@@ -2121,7 +2128,7 @@
         function checkWinPattern(card, patternKey) {
             const marked = createMarkedGrid(card);
             
-            const matrixPatterns = ['windmill', 'smiley', 'martini', 'bowtie', 'coverall', 'inner', 'corners'];
+            const matrixPatterns = ['windmill', 'smiley', 'martini', 'bowtie', 'coverall', 'inner', 'corners', 'checkerboard'];
             if (matrixPatterns.includes(patternKey)) {
                 return matchesPatternMatrix(marked, patterns[patternKey]);
             }
@@ -2131,7 +2138,6 @@
                 case 'outside': return checkOutside(marked);
                 case 'x': return checkXPattern(marked);
                 case 'plus': return checkPlus(marked);
-                case 'checkerboard': return checkCheckerboard(marked);
                 default: return checkHorizontal(marked);
             }
         }
@@ -2192,15 +2198,6 @@
         function checkPlus(marked) {
             return marked[2][0] && marked[2][1] && marked[2][3] && marked[2][4] &&
                    marked[0][2] && marked[1][2] && marked[3][2] && marked[4][2] && marked[2][2];
-        }
-        
-        function checkCheckerboard(marked) {
-            for (let row = 0; row < 5; row++) {
-                for (let col = 0; col < 5; col++) {
-                    if ((row + col) % 2 === 0 && row !== 2 && col !== 2 && !marked[row][col]) return false;
-                }
-            }
-            return marked[2][2];
         }
         
         function openPlayerWindow() {
@@ -2388,6 +2385,10 @@
             const d = JSON.parse(localStorage.getItem('bingoGameState')||'{}');
             const c = d.calledNumbers?.[d.calledNumbers.length-1];
             const x = c ? (c<=15?'B':c<=30?'I':c<=45?'N':c<=60?'G':'O') : '-';
+            const s = JSON.parse(localStorage.getItem('bingoSettings') || '{}');
+
+            if (s.eventName) document.getElementById('eventName').textContent = s.eventName;
+            if (s.sponsorName) document.getElementById('sponsorName').textContent = s.sponsorName;
             
             document.getElementById('pcur').textContent = c ? x+'-'+c : '--';
             
@@ -2440,6 +2441,10 @@
             
             // Clear localStorage
             Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+
+            if (gameState.isAutoCalling) {
+                clearInterval(gameState.autoCallInterval);
+            }
             
             // Reset game state
             gameState.calledNumbers = [];
@@ -2462,6 +2467,7 @@
             
             // Update ALL UI elements
             getEl('cardsContainer').innerHTML = '';
+            getEl('autoBtn').textContent = 'Auto Call: OFF';
             updateCardCount();
             updateCardList();
             createBoards();
@@ -2471,6 +2477,8 @@
             // Clear logo previews
             ['left', 'right'].forEach(pos => {
                 ['light', 'dark'].forEach(mode => {
+                    const inputEl = getEl(`${pos}${capitalize(mode)}LogoInput`);
+                    if (inputEl) inputEl.value = '';
                     const previewId = `${pos}${capitalize(mode)}LogoPreview`;
                     const el = document.getElementById(previewId);
                     if (el) el.innerHTML = '<span class="placeholder">No logo</span>';
