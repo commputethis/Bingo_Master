@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://commputethis.github.io/Bingo_Master/bingo.html)
 
-A complete, self-hosted bingo solution that runs entirely in your browser with no internet connection required.
+A complete, self-hosted bingo solution that runs entirely in your browser with no Internet connection required.
 
 **🎮 Live Demo:** [Play Bingo Master Online](https://commputethis.github.io/Bingo_Master/bingo.html)
 
@@ -86,7 +86,7 @@ No download needed! The online version works exactly like the downloadable versi
 
 - **Export/Import** - Backup or transfer to another machine via JSON file
 - **Local storage** - All data saved in your browser
-- **No internet required** after initial load (downloadable version)
+- **No Internet required** after initial load (downloadable version)
 
 ## System Requirements
 
