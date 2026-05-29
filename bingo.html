@@ -359,7 +359,7 @@
             font-size: 16px; 
             border: 2px solid #ddd; 
             border-radius: 8px; 
-            width: 250px; 
+            width: 300px; 
         }
         
         button { 
@@ -423,17 +423,14 @@
         }
         
         .card-event-name { 
-            font-size: 18px; 
+            font-size: 10px; 
             font-weight: bold; 
             color: var(--primary-color); 
-            margin-bottom: 3px;
-            line-height: 1.2;
         }
         
         .card-sponsor-name { 
-            font-size: 12px; 
+            font-size: 9px; 
             color: #666;
-            line-height: 1.2;
         }
         
         .bingo-grid { 
@@ -605,13 +602,14 @@
             }
             
             .card-event-name { 
-                font-size: 20px !important; 
+                font-size: 14px !important; 
+                font-weight: bold; 
                 color: var(--primary-color) !important;
             }
             
             .card-sponsor-name { 
-                font-size: 13px !important; 
-                color: #333 !important;
+                font-size: 12px !important; 
+                color: #666 !important;
             }
             
             .card-id { 
@@ -1063,21 +1061,24 @@
                         <h3>Event Info</h3>
                         <div class="input-group">
                             <label>Event Name:</label>
-                            <input type="text" id="eventNameInput" value="Charity Bingo Night" placeholder="Enter event name">
+                            <input type="text" maxlength="27" id="eventNameInput" value="Charity Bingo Night" placeholder="Enter event name">
                         </div>
+                        <p class="text-muted text-small text-center mt-20">
+                            27 Characters max. Event name will appear on cards and player view.
+                        </p>
                         
                         <div class="input-group">
                             <label>Sponsor Name:</label>
-                            <input type="text" id="sponsorNameInput" value="Sponsored by Local Business" placeholder="Enter sponsor name">
+                            <input type="text" maxlength="32" id="sponsorNameInput" value="Sponsored by Local Business" placeholder="Enter sponsor name">
                         </div>
+                        <p class="text-muted text-small text-center mt-20">
+                            32 Characters max. Sponsor name will appear on cards and player view.
+                        </p>
                         
                         <div class="input-group">
                             <label>Card ID Prefix:</label>
                             <input type="text" id="cardPrefixInput" value="A-" placeholder="e.g., GAME-" maxlength="10">
                         </div>
-                        <p class="text-muted text-small text-center mt-20">
-                            Event name and sponsor will appear on cards and player view.
-                        </p>
                     </div>
                     
                     <div class="settings-column">
@@ -1918,7 +1919,6 @@
             });
         }
         
-        // FIXED: showPanel no longer double-adds active class
         function showPanel(panelId, event) {
             if (panelId === 'player') {
                 openPlayerWindow();
@@ -1934,7 +1934,6 @@
             if (panelId === 'caller') updateBoards();
         }
         
-        // FIXED: Input validation
         function generateCards() {
             const input = getEl('cardCount');
             const count = parseInt(input.value);
@@ -1993,16 +1992,9 @@
             const div = document.createElement('div');
             div.className = 'bingo-card';
             
-            const isDark = document.body.classList.contains('dark-mode');
-            const leftLogo = logoData.left[isDark ? 'dark' : 'light'];
-            const rightLogo = logoData.right[isDark ? 'dark' : 'light'];
-            
-            const logosHtml = (leftLogo || rightLogo) ? `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; min-height: 60px;">
-                    ${leftLogo ? `<img src="${leftLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>'}
-                    ${rightLogo ? `<img src="${rightLogo}" style="max-height: 60px; max-width: 120px; object-fit: contain;">` : '<div></div>'}
-                </div>
-            ` : '';
+            // Always use light mode logos for printed/generated cards
+            const leftLogo = logoData.left.light;
+            const rightLogo = logoData.right.light;
             
             const columns = ['B', 'I', 'N', 'G', 'O'];
             const headersHtml = columns.map(col => `<div class="bingo-header">${col}</div>`).join('');
@@ -2018,9 +2010,14 @@
             div.innerHTML = `
                 <div class="card-header">
                     <div class="card-id">Card ID: ${card.id}</div>
-                    ${logosHtml}
-                    <div class="card-event-name">${gameState.eventName || 'BINGO'}</div>
-                    <div class="card-sponsor-name">${gameState.sponsorName || ''}</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 5px;">
+                        ${leftLogo ? `<img src="${leftLogo}" style="max-height: 40px; max-width: 80px; object-fit: contain;">` : '<div></div>'}
+                        <div>
+                            <div class="card-event-name">${gameState.eventName || ''}</div>
+                            <div class="card-sponsor-name">${gameState.sponsorName || ''}</div>
+                        </div>
+                        ${rightLogo ? `<img src="${rightLogo}" style="max-height: 40px; max-width: 80px; object-fit: contain;">` : '<div></div>'}
+                    </div>
                 </div>
                 <div class="bingo-grid">${headersHtml}${cellsHtml}</div>
             `;
@@ -2206,7 +2203,6 @@
             return marked[2][2];
         }
         
-        // FIXED: Player window with memory management and maximized size
         function openPlayerWindow() {
             // Clear reference if window was closed
             if (playerWindow && playerWindow.closed) {
@@ -2335,12 +2331,12 @@
 <body>
     <button class="fullscreen-btn" id="fsBtn" onclick="toggleFS()">⛶ Full Screen</button>
     <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 20px;">
-        ${leftLogo ? `<img src="${leftLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+        ${leftLogo ? `<img src="${leftLogo}" style="height: 160px; max-width: 400px; object-fit: contain;">` : '<div style="width: 400px;"></div>'}
         <div>
             <div class="event" id="eventName">${gameState.eventName}</div>
             <div class="sponsor" id="sponsorName">${gameState.sponsorName}</div>
         </div>
-        ${rightLogo ? `<img src="${rightLogo}" style="height: 80px; max-width: 200px; object-fit: contain;">` : '<div style="width: 200px;"></div>'}
+        ${rightLogo ? `<img src="${rightLogo}" style="height: 160px; max-width: 400px; object-fit: contain;">` : '<div style="width: 400px;"></div>'}
     </div>
     <div class="pattern" id="patternText">Pattern: ${patternNames[gameState.currentPattern]}</div>
     <div class="pattern-grid" id="patternGrid"></div>
