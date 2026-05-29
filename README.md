@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://commputethis.github.io/Bingo_Master/bingo.html)
 
-A complete, self-hosted charity bingo solution that runs entirely in your browser with no internet connection required.
+A complete, self-hosted bingo solution that runs entirely in your browser with no internet connection required.
 
 **🎮 Live Demo:** [Play Bingo Master Online](https://commputethis.github.io/Bingo_Master/bingo.html)
 
@@ -146,8 +146,8 @@ Your data is stored in your browser's local storage just like the downloaded ver
    - Select **Winning Pattern** from dropdown
    - Click **Call Next Number** or enable **Auto Call**
 
-2. **Display for Players** (Player View tab):
-   - Click **Open in New Window**
+2. **Display for Players** (Player View Window):
+   - **Opend in a New Window**
    - Drag window to projector/second screen
    - Click **Full Screen** button if desired
 
@@ -255,6 +255,7 @@ All data is stored locally in your browser using LocalStorage:
 - Dark/light mode preference
 
 **Important**: Clearing browser data will delete all cards and history. Use **Export** to create backups!
+**Note for Private/Incognito Mode**: Data may not persist between sessions in private browsing mode.
 
 ## Troubleshooting
 
@@ -299,7 +300,6 @@ All data is stored locally in your browser using LocalStorage:
 
 ## Keyboard Shortcuts
 
-- **Spacebar**: Call next number (in Automatic mode)
 - **ESC**: Exit fullscreen
 
 ## Source Code
