@@ -1,6 +1,6 @@
 # Bingo Master
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://commputethis.github.io/Bingo_Master/bingo.html)
 
 A complete, self-hosted bingo solution that runs entirely in your browser with no Internet connection required.
