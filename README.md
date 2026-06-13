@@ -345,7 +345,7 @@ View the source code or contribute on GitHub:
 
 ## License
 
-MIT License — See [LICENSE](LICENSE) for details.
+AGPL-3.0 — See [LICENSE](LICENSE) for details.
 
 Copyright (c) 2026 David Prows
 
